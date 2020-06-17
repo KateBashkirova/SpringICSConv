@@ -5,21 +5,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
-import org.springframework.web.servlet.view.ResourceBundleViewResolver;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
+@EnableWebMvc //поддерживает веб-функции
 @Configuration
 @ComponentScan({"config", "jcs"})
-@EnableWebMvc //поддерживает веб-функции
 
 public class SpringConfig implements WebMvcConfigurer { //с этим интерфейсом реализуем метод cVR
     //внедряем appCont для tResolver
@@ -39,6 +35,11 @@ public class SpringConfig implements WebMvcConfigurer { //с этим интер
         return templateResolver;
     }
 
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("hello");
+    }
+
     @Bean
     public SpringTemplateEngine templateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
@@ -54,14 +55,4 @@ public class SpringConfig implements WebMvcConfigurer { //с этим интер
         resolver.setTemplateEngine(templateEngine());
         registry.viewResolver(resolver);
     }
-
-    /*@Override
-    public void configureViewResolvers (ViewResolverRegistry registry){
-        registry.jsp("/WEB-INF/views", ".jsp");
-    }
-
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/");
-    } */
 }
