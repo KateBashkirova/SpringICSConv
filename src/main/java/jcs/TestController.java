@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping("/aa")
+@RequestMapping("/")
 public class TestController {
     public TestController() {
         System.out.println("Controller Constructed");
