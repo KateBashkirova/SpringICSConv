@@ -1,6 +1,6 @@
 function createJSON() {
     var object={};
-    var formData = new FormData(document.forms.meetingForm); //ссылаемся на форму
+    var formData = new FormData(document.forms.newMeetingForm); //ссылаемся на форму
     //формируем объект из формы
     formData.forEach(function (value,key) {
         object[key] = value;

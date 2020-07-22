@@ -2,19 +2,11 @@ package jcs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
 
 @Controller
 public class FormProcessingController {
@@ -45,12 +37,8 @@ public class FormProcessingController {
         return "result";
     }
 
-    //формирование файла
-    @RequestMapping(value = "/readFile")
-    @ResponseBody
-    public String readFile() throws IOException {
-        String response;
-
+    //обрабатываем json
+    public Meeting processJson() throws IOException {
         //читаем JSON из файла
         //TODO: пофиксить заполнение формы и генерировать json непосредственно её заполнением
         BufferedReader br = new BufferedReader(new FileReader("D://Универчик//Практика//newVersion//file//json.txt"));
@@ -60,35 +48,48 @@ public class FormProcessingController {
         //парсим JSON в Java объект
         ObjectMapper mapper = new ObjectMapper();
         Meeting meeting = mapper.readValue(jsonStr, Meeting.class);
+        return meeting;
+    }
 
+
+    //подготовка информации для сборки ics файла
+
+    //меняем формат таймзоны на понятный календарю
+    public class Timezone {
+        public Timezone() throws IOException {}
+
+        Meeting meeting = processJson();
 
         /*
-        //заполняем файл стандартной инфой
-        String stanStr = new String(Files.readAllBytes(Paths.get("D://Универчик//Практика//newVersion//file//standartInfo.txt")));
-        StringBuffer st = new StringBuffer(stanStr);
-        //FIXME: он не добавляет сразу все строки
-        //ищем индекс места, в которое вставим сгенерированную пользователем инфу
-        String newStr = String.valueOf(st.insert(stanStr.indexOf("DTEND"), "DESCRIPTION:" + meeting.getDescription()));
-        String infoStr =
-                String.valueOf(st.insert(stanStr.indexOf("PRIORITY:"), "LOCATION:" + meeting.getLocation())) +
-                String.valueOf(st.insert(stanStr.indexOf("TRANSP:"), "SUMMARY;LANGUAGE=ru:" + meeting.getSummary()));
-        //ну или так
-        String doneStr = newStr.replaceAll("\n", "");
+        //tzid - это "пояснительная бригада" на случай, если код таймзоны ни о чём тебе не говорит
+        public String tzid() {
+            String timezone = meeting.getTimezone();
+            String tzid =
+        }*/
 
-        //собираем новый файл
-        File meetingFile = new File("D://Универчик//Практика//newVersion//file//meeting.ics");
-        //пробуем создать файл
-        if (!meetingFile.createNewFile())
-        {
-            response = "Cannot create file";
+        //смещение относительно UTC
+        public String tzOffSet(){
+            //таймзона всегда имеет вид знакчч:чч. Для tzOffSet нужно убрать :
+            //FIXME: инфа о Asia/Omsk, например, лишняя, но вщ и так работает
+            String tzOffSet = meeting.getTimezone().replace(":", "");
+            return tzOffSet;
         }
+    }
 
-        FileWriter wr = new FileWriter(meetingFile);
 
-        //записываем всё в файл
-        wr.write(doneStr);
-        wr.flush();
-        wr.close(); */
+
+
+
+
+
+
+    //формирование файла
+    @RequestMapping(value = "/readFile")
+    @ResponseBody
+    public String readFile() throws IOException {
+        String response;
+
+        Meeting meeting = processJson();
 
         //TODO: в название файла-встречи заложить имя клиента или другую уникальную инфу
         File meetingFile = new File("D://Универчик//Практика//newVersion//file//meeting.ics");
@@ -100,6 +101,8 @@ public class FormProcessingController {
         else response = "File with your meeting has been created";
 
         //заполняем файл
+        Timezone tz = new Timezone();
+
         FileWriter writer = new FileWriter(meetingFile);
         writer.write("BEGIN:VCALENDAR\n" +
                 "VERSION:2.0\n" +
@@ -110,8 +113,8 @@ public class FormProcessingController {
                 "TZURL:http://tzurl.org/zoneinfo-outlook/Asia/Omsk\n" +
                 "X-LIC-LOCATION:Asia/Omsk\n" +
                 "BEGIN:STANDARD\n" +
-                "TZOFFSETFROM:+0600\n" +
-                "TZOFFSETTO:+0600\n" +
+                "TZOFFSETFROM:" + tz.tzOffSet() + "\n" +
+                "TZOFFSETTO:" + tz.tzOffSet() + "\n" +
                 "TZNAME:+06\n" +
                 "DTSTART:19700101T000000\n" +
                 "END:STANDARD\n" +

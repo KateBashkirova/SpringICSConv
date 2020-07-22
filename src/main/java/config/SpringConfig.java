@@ -28,14 +28,14 @@ public class SpringConfig implements WebMvcConfigurer { //с этим интер
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
         templateResolver.setApplicationContext(applicationContext);
         templateResolver.setPrefix("/WEB-INF/views/"); //папка, где лежат представления
-        templateResolver.setSuffix(".jsp"); //расширение представлений
+        templateResolver.setSuffix(".html"); //расширение представлений
         return templateResolver;
     }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         //registry.addViewController("/").setViewName("hello");
-        registry.addViewController("/").setViewName("example");
+        registry.addViewController("/").setViewName("newMeetingForm");
     }
 
     @Bean
