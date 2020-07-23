@@ -12,7 +12,7 @@ import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
 @EnableWebMvc //поддерживает веб-функции
 @Configuration
-@ComponentScan({"config", "jcs"})
+@ComponentScan({"config", "ics"})
 
 public class SpringConfig implements WebMvcConfigurer { //с этим интерфейсом реализуем метод cVR
     //внедряем appCont для tResolver

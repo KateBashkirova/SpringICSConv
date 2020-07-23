@@ -1,12 +1,16 @@
-package jcs;
+package ics;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ics.icsClasses.DateAndTime;
+import ics.icsClasses.MeetingProcessor;
+import ics.icsClasses.Timezone;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.*;
+import java.util.ArrayList;
 
 @Controller
 public class FormProcessingController {
@@ -37,50 +41,6 @@ public class FormProcessingController {
         return "result";
     }
 
-    //обрабатываем json
-    public Meeting processJson() throws IOException {
-        //читаем JSON из файла
-        //TODO: пофиксить заполнение формы и генерировать json непосредственно её заполнением
-        BufferedReader br = new BufferedReader(new FileReader("D://Универчик//Практика//newVersion//file//json.txt"));
-        String jsonStr = br.readLine();
-        br.close();
-
-        //парсим JSON в Java объект
-        ObjectMapper mapper = new ObjectMapper();
-        Meeting meeting = mapper.readValue(jsonStr, Meeting.class);
-        return meeting;
-    }
-
-
-    //подготовка информации для сборки ics файла
-
-    //меняем формат таймзоны на понятный календарю
-    public class Timezone {
-        public Timezone() throws IOException {}
-
-        Meeting meeting = processJson();
-
-        /*
-        //tzid - это "пояснительная бригада" на случай, если код таймзоны ни о чём тебе не говорит
-        public String tzid() {
-            String timezone = meeting.getTimezone();
-            String tzid =
-        }*/
-
-        //смещение относительно UTC
-        public String tzOffSet(){
-            //таймзона всегда имеет вид знакчч:чч. Для tzOffSet нужно убрать :
-            //FIXME: инфа о Asia/Omsk, например, лишняя, но вщ и так работает
-            String tzOffSet = meeting.getTimezone().replace(":", "");
-            return tzOffSet;
-        }
-    }
-
-
-
-
-
-
 
 
     //формирование файла
@@ -89,11 +49,16 @@ public class FormProcessingController {
     public String readFile() throws IOException {
         String response;
 
-        Meeting meeting = processJson();
+        //подключаем классы для работы
+        MeetingProcessor mt = new MeetingProcessor();
+        Meeting meeting = mt.processJson();
+        Timezone tz = new Timezone();
+        DateAndTime dateAndTime = new DateAndTime();
+        ArrayList <String> currDateAndTime = dateAndTime.currentDateAndTime();
 
-        //TODO: в название файла-встречи заложить имя клиента или другую уникальную инфу
-        File meetingFile = new File("D://Универчик//Практика//newVersion//file//meeting.ics");
         //пробуем создать файл
+        File dir = new File("D://Универчик//Практика//newVersion//file");
+        File meetingFile = new File(dir, meeting.getSummary() + ".ics");
         if (!meetingFile.createNewFile())
         {
             response = "Cannot create file";
@@ -101,29 +66,26 @@ public class FormProcessingController {
         else response = "File with your meeting has been created";
 
         //заполняем файл
-        Timezone tz = new Timezone();
-
         FileWriter writer = new FileWriter(meetingFile);
         writer.write("BEGIN:VCALENDAR\n" +
                 "VERSION:2.0\n" +
                 "PRODID:somerandomgirl\n" +
                 "CALSCALE:GREGORIAN\n" +
                 "BEGIN:VTIMEZONE\n" +
-                "TZID=Asia/Omsk\n" +
-                "TZURL:http://tzurl.org/zoneinfo-outlook/Asia/Omsk\n" +
-                "X-LIC-LOCATION:Asia/Omsk\n" +
+                "TZID=" + tz.tzid() + "\n" +
+                "TZURL:http://tzurl.org/zoneinfo-outlook/" + tz.tzid() + "\n" +
+                "X-LIC-LOCATION:" + tz.tzid() + "\n" +
                 "BEGIN:STANDARD\n" +
                 "TZOFFSETFROM:" + tz.tzOffSet() + "\n" +
                 "TZOFFSETTO:" + tz.tzOffSet() + "\n" +
-                "TZNAME:+06\n" +
+                "TZNAME:" + tz.tzName() + "\n" +
                 "DTSTART:19700101T000000\n" +
                 "END:STANDARD\n" +
                 "END:VTIMEZONE\n" +
                 "BEGIN:VEVENT\n" +
-                "DTSTAMP:20200721T144803Z\n" +
-                "DTSTART;TZID=Asia/Omsk:20200721T120000\n" +
-                "RRULE:FREQ=WEEKLY;BYDAY=SU,TU,TH,SA\n" +
-                "DTEND;TZID=Asia/Omsk:20200721T140000\n" +
+                "DTSTAMP:" + currDateAndTime.get(0) + "T" + currDateAndTime.get(1) + "Z" + "\n" +
+                "DTSTART;TZID=" + tz.tzid() + ":" + dateAndTime.Date("start") + "T" + dateAndTime.Time("start") + "\n" +
+                "DTEND;TZID=" + tz.tzid() + ":" + dateAndTime.Date("end") + "T" + dateAndTime.Time("end") + "\n" +
                 "SUMMARY:" + meeting.getSummary() + "\n" +
                 "DESCRIPTION:" + meeting.getDescription() + "\n" +
                 "LOCATION:" + meeting.getLocation() + "\n" +
