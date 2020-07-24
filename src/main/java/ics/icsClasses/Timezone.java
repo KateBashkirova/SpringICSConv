@@ -12,7 +12,7 @@ public class Timezone {
     public Timezone() throws IOException {}
 
     //расшифровка кода таймзоны
-    public String tzid(){
+    public String tzid() {
         //tzid - это "пояснительная бригада" на случай, если код таймзоны ни о чём тебе не говорит
         String timezone = meeting.getTimezone();
         String tzid = timezone.replaceAll("[\\s0-9:+]", ""); //удаляем все цифры, знаки и пробелы

@@ -52,6 +52,19 @@
                     <input name="endTime" type="text" class="form-control" id="endTime" pattern="(0[0-9]|1[0-9]|2[0-3])(:[0-5][0-9]){2}" required>
                 </div>
             </div>
+            <br>
+            <label for="selectReminder">Reminder</label>
+            <select name="reminder" id="selectReminder" class="form-control">
+                <option>None</option>
+                <option selected>At time of event</option>
+                <option>5 minutes before event</option>
+                <option>15 minutes before event</option>
+                <option>30 minutes before event</option>
+                <option>1 hour before event</option>
+                <option>1 day before event</option>
+                <option>1 week before event</option>
+                <!--<option>Custom</option>-->
+            </select>
         </div>
     </form>
 </div>

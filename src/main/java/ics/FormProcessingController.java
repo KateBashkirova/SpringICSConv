@@ -3,6 +3,7 @@ package ics;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ics.icsClasses.DateAndTime;
 import ics.icsClasses.MeetingProcessor;
+import ics.icsClasses.Reminder;
 import ics.icsClasses.Timezone;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -55,6 +56,7 @@ public class FormProcessingController {
         Timezone tz = new Timezone();
         DateAndTime dateAndTime = new DateAndTime();
         ArrayList <String> currDateAndTime = dateAndTime.currentDateAndTime();
+        Reminder reminder = new Reminder();
 
         //пробуем создать файл
         File dir = new File("D://Универчик//Практика//newVersion//file");
@@ -88,11 +90,19 @@ public class FormProcessingController {
                 "DTEND;TZID=" + tz.tzid() + ":" + dateAndTime.Date("end") + "T" + dateAndTime.Time("end") + "\n" +
                 "SUMMARY:" + meeting.getSummary() + "\n" +
                 "DESCRIPTION:" + meeting.getDescription() + "\n" +
-                "LOCATION:" + meeting.getLocation() + "\n" +
-                "BEGIN:VALARM\n" +
-                "ACTION:DISPLAY\n" +
-                "DESCRIPTION:" + meeting.getDescription() +"\n" +
-                "TRIGGER:-PT5M\n" + "END:VALARM\n" + "END:VEVENT\n" + "END:VCALENDAR\n");
+                "LOCATION:" + meeting.getLocation() + "\n");
+        //если нужно напоминание о встрече
+        if (reminder.ReminderTime() != "null")
+        {
+            writer.write("BEGIN:VALARM\n" +
+                            "ACTION:DISPLAY\n" +
+                            "DESCRIPTION:" + meeting.getDescription() +"\n" +
+                            "TRIGGER:" + reminder.ReminderTime() + "\n" +
+                            "END:VALARM\n" + "END:VEVENT\n" + "END:VCALENDAR\n");
+        }
+        else {
+            writer.write("END:VEVENT\n" + "END:VCALENDAR\n");
+        }
         writer.close();
         return response;
     }
