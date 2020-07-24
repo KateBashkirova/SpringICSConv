@@ -39,9 +39,7 @@ public class DateAndTime {
         else date = meeting.getEndDate();
 
         //приводим к виду YYYYMMDD без знаков
-        String dateWithoutDots = date.replaceAll("[\\.]", ""); //убираем точки
-        String icsDate = dateWithoutDots.substring(4,8) + dateWithoutDots.substring(2,4) + dateWithoutDots.substring(0,2);
-
+        String icsDate = date.replaceAll("[\\-]", ""); //убираем точки
         return icsDate;
     }
 
@@ -52,9 +50,8 @@ public class DateAndTime {
         if (eventStage.equalsIgnoreCase("start")) time = meeting.getStartTime();
         else time = meeting.getEndTime();
 
-        //приводим к виду HHMMSS без знаков
-        String icsTime = time.replaceAll(":", "");
-
+        //приводим к виду HHMM без знаков + добавляем SS
+        String icsTime = time.replaceAll(":", "") + "00";
         return icsTime;
     }
 }
