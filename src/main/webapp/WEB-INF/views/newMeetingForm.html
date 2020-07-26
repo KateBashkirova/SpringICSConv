@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="script.js"></script>
     <title>Create new meeting</title>
@@ -9,8 +12,8 @@
 <body>
 <div class="container-xl">
     <form name="newMeetingForm" method="POST" onsubmit="sendJSON()">
-        <button id="submit" type="submit">Create ics file</button>
-        <label>New Meeting</label>
+        <br>
+        <label style="font-size: 20px;">New Meeting</label>
         <div class="form-group">
             <label for="summary">Event title</label>
             <input name="summary" type="text" class="form-control" id="summary" required>
@@ -21,10 +24,16 @@
             <label for="description">Description</label>
             <textarea name="description" class="form-control" id="description" rows="5"></textarea>
             <br>
-            <label for="selectTimezone">Select your timezone</label>
+            <label for="selectTimezone">Select your time zone</label>
             <select name="timezone" id="selectTimezone" class="form-control">
-                <option selected>+06:00 Asia/Omsk</option>
                 <option>+00:00 UTC</option>
+                <option>+03:00 Europe/Moscow</option>
+                <option>+04:00 Asia/Dubai</option>
+                <option selected>+06:00 Asia/Omsk</option>
+                <option>+07:00 Asia/Krasnoyarsk</option>
+                <option>+09:00 Japan, Korea</option>
+                <option>+10:00 Asia/Vladivostok</option>
+                <option>+11:30 Pacific/Norfolk</option>
             </select>
             <br>
             <div class="form-row">
@@ -65,7 +74,43 @@
                 <option>1 week before event</option>
                 <!--<option>Custom</option>-->
             </select>
+            <br>
+            <label for="selectEventStatus">Available/Busy</label>
+            <a href="#" data-target="#eventStatusModal" data-toggle="modal">(what's this?)</a>
+            <!-- Modal -->
+            <div class="modal fade" id="eventStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="eventStatusModalLabel">Event status</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Event status is the characteristic of an event that determines whether it appears to consume time on a calendar.</p>
+                            <p align="center">For all users</p>
+                            <p>Choose <b>Busy</b> if this event consumes actual time in your schedule. Time of the event will be blocked in your calendar and you will not be able to schedule
+                                another event at this time interval.</p>
+                            <p>Choose <b>Free</b> if you don't want to block time of this event. You will be able to schedule another events at this time interval.</p>
+                            <p align="center">For Microsoft Outlook users only</p>
+                            <p>Choose <b>Tentative</b> if you are not sure whether the event will take place or weather you will be a part of it.</p>
+                            <p>Choose <b>Out Of Office</b> if you will not be in office at time of the event.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <select name="eventStatus" id="selectEventStatus" class="form-control">
+                <option selected>Free</option>
+                <option>Busy</option>
+                <option>Tentative</option>
+                <option>Out Of Office</option>
+            </select>
         </div>
+        <button id="submit" type="submit" class="btn btn-primary">Create ics file</button>
     </form>
 </div>
 </body>

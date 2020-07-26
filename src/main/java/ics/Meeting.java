@@ -12,6 +12,7 @@ public class Meeting implements Serializable {
     private String endDate;
     private String endTime;
     private String reminder;
+    private String eventStatus;
 
     public Meeting() {}
 
@@ -86,4 +87,8 @@ public class Meeting implements Serializable {
     public void setReminder(String reminder) {
         this.reminder = reminder;
     }
+
+    public String getEventStatus() { return eventStatus; }
+
+    public void setEventStatus(String eventStatus) { this.eventStatus = eventStatus; }
 }

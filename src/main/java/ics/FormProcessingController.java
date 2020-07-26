@@ -1,12 +1,10 @@
 package ics;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ics.icsClasses.DateAndTime;
 import ics.icsClasses.MeetingProcessor;
 import ics.icsClasses.Reminder;
 import ics.icsClasses.Timezone;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -15,34 +13,20 @@ import java.util.ArrayList;
 
 @Controller
 public class FormProcessingController {
-    @RequestMapping(value = "/meeting", method = RequestMethod.GET)
-    public ModelAndView meeting(){
-        //при загрузке страницы отобразить вьюху с формой для заполнения
-        return new ModelAndView("example", "meetingForm", new Meeting());
+    //отображаем страницу с формой
+    @GetMapping("/do")
+    public ModelAndView doMeeting(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("meeting");
+        return modelAndView;
     }
 
-    @RequestMapping(value = "/createMeeting", method = RequestMethod.POST)
+    //сообщаем об успешном формировании файла
+    @PostMapping("/do")
     @ResponseBody
-    public String createMeeting(@ModelAttribute("meetingForm") Meeting meeting, ModelMap model) {
-        model.addAttribute("location", meeting.getLocation());
-        model.addAttribute("summary", meeting.getSummary());
-        model.addAttribute("description", meeting.getDescription());
-
-        return "location";
+    public String answerMeeting(){
+        return "Your meeting had been setted";
     }
-
-    @GetMapping("/talk")
-    @ResponseBody
-    public String talk() {
-        return "Something";
-    }
-
-    @GetMapping("/showResult")
-    public String result() {
-        return "result";
-    }
-
-
 
     //формирование файла
     @RequestMapping(value = "/readFile")
@@ -91,8 +75,12 @@ public class FormProcessingController {
                 "SUMMARY:" + meeting.getSummary() + "\n" +
                 "DESCRIPTION:" + meeting.getDescription() + "\n" +
                 "LOCATION:" + meeting.getLocation() + "\n");
+        if(meeting.getEventStatus().equalsIgnoreCase("Out Of Office")){
+            writer.write("X-MICROSOFT-CDO-BUSYSTATUS:" + "OOF" + "\n");
+        }
+        else writer.write("X-MICROSOFT-CDO-BUSYSTATUS:" + meeting.getEventStatus().toUpperCase() + "\n");
         //если нужно напоминание о встрече
-        if (reminder.ReminderTime() != "null")
+        if (!reminder.ReminderTime().equalsIgnoreCase("null"))
         {
             writer.write("BEGIN:VALARM\n" +
                             "ACTION:DISPLAY\n" +
