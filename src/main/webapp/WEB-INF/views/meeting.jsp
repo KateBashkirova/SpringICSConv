@@ -1,15 +1,16 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html lang="en">
 <head>
     <title>Create new meeting</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="<c:url value="/resources/main.css" />" />
-    <script src="<c:url value="/resources/script.js"/>"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/script.js"></script>
+    <script type="text/css" src="${pageContext.request.contextPath}/css/main.css"></script>
 </head>
 <body>
 <div class="container-xl">
+    <c:url var="meeting" value="/createMeeting"/>
     <form name="newMeetingForm" method="POST" onsubmit="createJSON()">
         <label style="font-size: 20px;">New Meeting</label>
         <div class="form-group">
@@ -17,7 +18,7 @@
             <input name="summary" type="text" class="form-control" id="summary" required>
             <br>
             <label for="location">Location</label>
-            <input name="location" type="text" class="form-control" id="location" required>
+            <input name="location" type="text" class="form-control" id="location" path="location"/>
             <br>
             <label for="description">Description</label>
             <textarea name="description" class="form-control" id="description" rows="5"></textarea>

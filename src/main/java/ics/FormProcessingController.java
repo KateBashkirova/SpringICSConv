@@ -5,6 +5,7 @@ import ics.icsClasses.MeetingProcessor;
 import ics.icsClasses.Reminder;
 import ics.icsClasses.Timezone;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -13,20 +14,28 @@ import java.util.ArrayList;
 
 @Controller
 public class FormProcessingController {
+    //статические ресурсы??
+    @RequestMapping(value = "/staticResourceTest")
+    public String staticResource(Model model) {
+        return "staticResourcesTest";
+    }
+
     //отображаем страницу с формой
-    @GetMapping("/do")
+    @GetMapping("/createMeeting")
     public ModelAndView doMeeting(){
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("meeting");
+        modelAndView.setViewName("newMeetingForm");
         return modelAndView;
     }
 
     //сообщаем об успешном формировании файла
-    @PostMapping("/do")
-    @ResponseBody
-    public String answerMeeting(){
-        return "Your meeting had been setted";
+    @PostMapping("/createMeeting")
+    public ModelAndView answerMeeting(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("downloadFilePage");
+        return modelAndView;
     }
+
 
     //формирование файла
     @RequestMapping(value = "/readFile")
