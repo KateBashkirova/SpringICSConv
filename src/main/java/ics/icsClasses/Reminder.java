@@ -1,19 +1,9 @@
 package ics.icsClasses;
 
-import ics.Meeting;
-
-import java.io.IOException;
-
 public class Reminder {
-    //подключаем классы для работы
-    MeetingProcessor mt = new MeetingProcessor();
-    Meeting meeting = mt.processJson();
 
-    public Reminder() throws IOException {}
-
-    public String ReminderTime(){
-        String desiredTime = meeting.getReminder();
-        return timeDefinition(desiredTime);
+    public String ReminderTime(String reminderTime){
+        return timeDefinition(reminderTime);
     }
 
     private String timeDefinition(String desiredTime){

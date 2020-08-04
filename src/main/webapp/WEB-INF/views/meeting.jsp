@@ -1,24 +1,51 @@
-<<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html lang="en">
 <head>
     <title>Create new meeting</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/script.js"></script>
-    <script type="text/css" src="${pageContext.request.contextPath}/css/main.css"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/static/script.js"></script>
+    <script type="text/css" src="${pageContext.request.contextPath}/resources/static/main.css"></script>
 </head>
 <body>
+<script>
+    var jsonStr;
+    function createJSON() {
+        var object = {};
+        var formData = new FormData(document.forms.newMeetingForm); //ссылаемся на форму
+        //формируем объект из формы
+        formData.forEach(function (value, key) {
+            object[key] = value;
+        });
+        jsonStr = JSON.stringify(object);
+        alert("JSON created");
+        sendJson();
+    }
+
+    function sendJson(){
+        $.ajax({
+            type: 'POST',
+            url: './createMeeting',
+            data: jsonStr,
+            contentType: "application/json",
+            dataType: "json",
+            async: false,
+            cache: false,
+            processingData: false,
+            success: function() {
+                alert("JSON has been sent");
+            }
+        });
+    }
+</script>
 <div class="container-xl">
-    <c:url var="meeting" value="/createMeeting"/>
     <form name="newMeetingForm" method="POST" onsubmit="createJSON()">
         <label style="font-size: 20px;">New Meeting</label>
         <div class="form-group">
-            <label for="summary">Event title</label>
+            <label for="summary" style="color: aqua;">Event title</label>
             <input name="summary" type="text" class="form-control" id="summary" required>
             <br>
-            <label for="location">Location</label>
-            <input name="location" type="text" class="form-control" id="location" path="location"/>
+            <label for="location" id="locationLb">Location</label>
+            <input name="location" type="text" class="form-control" id="location">
             <br>
             <label for="description">Description</label>
             <textarea name="description" class="form-control" id="description" rows="5"></textarea>

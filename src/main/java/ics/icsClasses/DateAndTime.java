@@ -8,11 +8,6 @@ import java.util.ArrayList;
 
 //меняем формат времени и даты
 public class DateAndTime {
-    //подключаем классы для работы
-    MeetingProcessor mt = new MeetingProcessor();
-    Meeting meeting = mt.processJson();
-
-    public DateAndTime() throws IOException {}
 
     public ArrayList<String> currentDateAndTime(){
         //дату и время будем хранить отдельно (только строки!)
@@ -22,7 +17,7 @@ public class DateAndTime {
         String icsCurrDate = String.valueOf(currDate).replaceAll("[\\-]", ""); //убираем лишние знаки
 
         long curTime = System.currentTimeMillis(); //текущее системное время
-        String currTime = new SimpleDateFormat("HHMMSS").format(curTime); //приводим к нужному формату
+        String currTime = new SimpleDateFormat("hhmmss").format(curTime); //приводим к нужному формату
 
         //в список
         currDateAndTimeList.add(icsCurrDate);
@@ -31,27 +26,13 @@ public class DateAndTime {
         return currDateAndTimeList;
     }
 
-    public String Date(String eventStage){
-        String date;
-
-        //проверяем, какую дату запрашивают - начала или конца события
-        if (eventStage.equalsIgnoreCase("start")) date = meeting.getStartDate();
-        else date = meeting.getEndDate();
-
+    public String Date(String date){
         //приводим к виду YYYYMMDD без знаков
-        String icsDate = date.replaceAll("[\\-]", ""); //убираем точки
-        return icsDate;
+        return date.replaceAll("[\\-]", ""); //убираем точки;
     }
 
-    public String Time(String eventStage){
-        String time;
-
-        //проверяем, какое время запрашивают - начала или конца события
-        if (eventStage.equalsIgnoreCase("start")) time = meeting.getStartTime();
-        else time = meeting.getEndTime();
-
+    public String Time(String time){
         //приводим к виду HHMM без знаков + добавляем SS
-        String icsTime = time.replaceAll(":", "") + "00";
-        return icsTime;
+        return time.replaceAll(":", "") + "00";
     }
 }

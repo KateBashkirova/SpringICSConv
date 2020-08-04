@@ -6,6 +6,7 @@ function createJSON() {
         object[key] = value;
     });
     var jsonStr = JSON.stringify(object);
+    alert("Good");
 }
 
 /*function sendJSON(){
