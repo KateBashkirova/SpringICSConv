@@ -7,6 +7,7 @@ function createJSON() {
     });
     var jsonStr = JSON.stringify(object);
     alert("Good");
+    return false;
 }
 
 /*function sendJSON(){

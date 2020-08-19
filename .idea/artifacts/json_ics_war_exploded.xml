@@ -31,7 +31,6 @@
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.11.1" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.11.1" />
           <element id="library" level="project" name="Maven: javax.servlet:jstl:1.2" />
-          <element id="library" level="project" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:unknown" />
         </element>
       </element>
       <element id="directory" name="META-INF">

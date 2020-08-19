@@ -15,27 +15,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.w3c.dom.ls.LSOutput;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
 
-@RestController
+@Controller
 public class FormProcessingController {
-    //статические ресурсы??
-    @RequestMapping(value = "/staticResourceTest")
-    public String staticResource(Model model) {
-        return "staticResourcesTest";
-    }
-
-    //отображаем страницу с формой
-    @GetMapping("/formView")
-    public ModelAndView doMeeting(){
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("meeting");
-        return modelAndView;
-    }
-
     @RequestMapping(value = "/createMeeting", method = RequestMethod.GET)
     public ModelAndView showMeetingForm()
     {
@@ -111,16 +98,75 @@ public class FormProcessingController {
         return response;
     } */
 
-    //FIXME: error 415 при том, что meeting благополучно парсит
-    @RequestMapping(value="/createMeeting", method = RequestMethod.POST, consumes = "application/json", produces = "plain/text")
+
+    //FIXME: error 415 при том, что meeting благополучно парсит. Content-Type 100%
+    @RequestMapping(value="/createMeeting", method = RequestMethod.POST, consumes = "application/json")
     //тут как бы meeting, но на деле meeting = пришедшей jsonStr, просто Meeting показывает, что jsonStr распарсить по Meeting.class
-    public void createMeeting(@RequestBody Meeting meeting) throws IOException {
+    public ResponseEntity createMeeting(@RequestBody Meeting meeting) throws IOException {
         System.out.println(meeting.getSummary());
+        System.out.println(meeting.getLocation());
+        System.out.println(meeting.getStartDate());
+        System.out.println(meeting.getStartTime());
+        System.out.println(meeting.getEventStatus());
+
+        Timezone tz = new Timezone();
+        DateAndTime dateAndTime = new DateAndTime();
+        ArrayList <String> currDateAndTime = dateAndTime.currentDateAndTime();
+        Reminder reminder = new Reminder();
+
+        String meetingInfo = "BEGIN:VCALENDAR\n" +
+                "VERSION:2.0\n" +
+                "PRODID:ktbrv\n" +
+                "CALSCALE:GREGORIAN\n" +
+                "BEGIN:VTIMEZONE\n" +
+                "TZID=" + tz.tzid(meeting.getTimezone()) + "\n" +
+                "TZURL:http://tzurl.org/zoneinfo-outlook/" + tz.tzid(meeting.getTimezone()) + "\n" +
+                "X-LIC-LOCATION:" + tz.tzid(meeting.getTimezone()) + "\n" +
+                "BEGIN:STANDARD\n" +
+                "TZOFFSETFROM:" + tz.tzOffSet(meeting.getTimezone()) +
+                "TZOFFSETTO:" + tz.tzOffSet(meeting.getTimezone()) +
+                "TZNAME:" + tz.tzName(meeting.getTimezone()) +
+                "DTSTART:19700101T000000" +
+                "END:STANDARD" +
+                "END:VTIMEZONE" +
+                "BEGIN:VEVENT" +
+                "DTSTAMP:" + currDateAndTime.get(0) + "T" + currDateAndTime.get(1) + "Z" + "\n" +
+                "DTSTART;TZID=" + tz.tzid(meeting.getTimezone()) + ":" + dateAndTime.Date(meeting.getStartDate()) + "T" + dateAndTime.Time(meeting.getStartTime()) + "\n" +
+                "DTEND;TZID=" + tz.tzid(meeting.getTimezone()) + ":" + dateAndTime.Date(meeting.getEndDate()) + "T" + dateAndTime.Time(meeting.getEndTime()) + "\n" +
+                "SUMMARY:" + meeting.getSummary() + "\n" +
+                "DESCRIPTION:" + meeting.getDescription() + "\n" +
+                "LOCATION:" + meeting.getLocation() + "\n";
+
+        if(meeting.getEventStatus().equalsIgnoreCase("Out Of Office")){
+             meetingInfo.concat("X-MICROSOFT-CDO-BUSYSTATUS:OOF");
+        }
+        else meetingInfo.concat("X-MICROSOFT-CDO-BUSYSTATUS:" + meeting.getEventStatus().toUpperCase());
+
+        //если нужно напоминание о встрече
+        if (!reminder.ReminderTime(meeting.getReminder()).equalsIgnoreCase("null"))
+        {
+            meetingInfo.concat("BEGIN:VALARM" +
+                    "ACTION:DISPLAY" +
+                    "DESCRIPTION:" + meeting.getDescription() +
+                    "TRIGGER:" + reminder.ReminderTime(meeting.getReminder()) +
+                    "END:VALARM" + "END:VEVENT" + "END:VCALENDAR");
+        }
+        else {
+            meetingInfo.concat("END:VEVENT" + "END:VCALENDAR");
+        }
+
+        //формирование файла и отправка на скачивание
+        ByteArrayResource bt = new ByteArrayResource(meetingInfo.getBytes()); //предпочтительней, судя по spring.io
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf("application/ics"));
+        headers.add("Content-Disposition", "attachment;filename=" + meeting.getSummary() + ".ics");
+        return new ResponseEntity(bt, headers, HttpStatus.OK);
     }
 
     //формируем и отдаём файл "на ходу"
     @RequestMapping(value = "/download", method = RequestMethod.GET)
-    public ResponseEntity download() throws IOException {
+    //ResponseEntity aka полный HTTP ответ
+    public ResponseEntity<String> download() throws IOException {
         String meetingInfo = "BEGIN:VCALENDAR\n" +
                 "VERSION:2.0\n" +
                 "PRODID:betterNotToKnow\n" +
@@ -138,7 +184,6 @@ public class FormProcessingController {
                 "END:VTIMEZONE\n" +
                 "BEGIN:VEVENT\n" +
                 "DTSTAMP:20200726T192050Z\n" +
-                "UID:20200726T192050Z-1431052642@marudot.com\n" +
                 "DTSTART;TZID=Asia/Singapore:20200713T120000\n" +
                 "DTEND;TZID=Asia/Singapore:20200713T120000\n" +
                 "SUMMARY:Some meeting\n" +
@@ -159,21 +204,6 @@ public class FormProcessingController {
         DateAndTime dateAndTime = new DateAndTime();
         ArrayList <String> currDateAndTime = dateAndTime.currentDateAndTime();
         Reminder reminder = new Reminder();
-
-        //формирование файла "на лету"
-        Document icsDoc = new Document();
-        try{
-            icsDoc.open();
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.valueOf("application/ics"));
-            headers.add("Content-Disposition", "attachment;filename=" + meeting.getSummary()+".ics");
-            icsDoc.add(new Paragraph("Hello World!"));
-            OutputStream os = headers.getOutputStream();
-
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        }
-
 
         //пробуем создать файл
         File dir = new File("D://Универчик//Практика//newVersion//file");

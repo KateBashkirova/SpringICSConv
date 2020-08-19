@@ -11,7 +11,6 @@ public class MeetingProcessor {
     //обрабатываем json
     public Meeting processJson() throws IOException {
         //читаем JSON из файла
-        //TODO: пофиксить заполнение формы и генерировать json непосредственно её заполнением
         BufferedReader br = new BufferedReader(new FileReader("D://Универчик//Практика//newVersion//file//json.txt"));
         String jsonStr = br.readLine();
         br.close();

@@ -3,8 +3,8 @@
     <title>Create new meeting</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/static/script.js"></script>
-    <script type="text/css" src="${pageContext.request.contextPath}/resources/static/main.css"></script>
+<%--    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/static/script.js"></script>--%>
+<%--    <script type="text/css" src="${pageContext.request.contextPath}/resources/static/main.css"></script>--%>
 </head>
 <body>
 <script>
@@ -16,29 +16,39 @@
         formData.forEach(function (value, key) {
             object[key] = value;
         });
-        jsonStr = JSON.stringify(object);
-        alert("JSON created");
-        sendJson();
-    }
-
-    function sendJson(){
-        $.ajax({
-            type: 'POST',
-            url: './createMeeting',
-            data: jsonStr,
-            contentType: "application/json",
-            dataType: "json",
-            async: false,
-            cache: false,
-            processingData: false,
-            success: function() {
-                alert("JSON has been sent");
-            }
-        });
+        jsonStr = JSON.stringify(object); //преобразуем в JSON-строку
+        var json = JSON.stringify(object); //преобразуем в JSON-строку
+        var request = new XMLHttpRequest();
+        request.open("POST","./createMeeting",true);
+        request.responseType = "blob";
+        request.setRequestHeader("Content-Type", "application/json");
+        request.onload = function() {
+            var blob = request.response;
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = 'meeting.ics';
+            link.click();
+        }
+        request.send(json);
+        alert("JSON created / createJSON works");
+        return false;
+    //    $.ajax({
+    //         type: 'POST',
+    //         url: './createMeeting',
+    //         data: jsonStr,
+    //         contentType: "application/json; charset=utf-8",
+    //         dataType: "json",
+    //         async: false,
+    //         cache: false,
+    //         onData: function(data) {
+    //             alert("ajax works");
+    //             location = data;
+    //         }
+    // });
     }
 </script>
 <div class="container-xl">
-    <form name="newMeetingForm" method="POST" onsubmit="createJSON()">
+    <form name="newMeetingForm" method="POST" onsubmit="createJSON(); return false;">
         <label style="font-size: 20px;">New Meeting</label>
         <div class="form-group">
             <label for="summary" style="color: aqua;">Event title</label>
@@ -93,6 +103,41 @@
                 <option>1 day before event</option>
                 <option>1 week before event</option>
                 <!--<option>Custom</option>-->
+            </select>
+            <br>
+            <label for="selectEventStatus">Event Status</label>
+            <a href="#" data-target="#eventStatusModal" data-toggle="modal">(what's this?)</a>
+            <!-- Modal -->
+            <div class="modal fade" id="eventStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="eventStatusModalLabel">Event status</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Event status is the characteristic of an event that determines whether it appears to consume time on a calendar.</p>
+                            <p align="center">For all users</p>
+                            <p>Choose <b>Busy</b> if this event consumes actual time in your schedule. Time of the event will be blocked in your calendar and you will not be able to schedule
+                                another event at this time interval.</p>
+                            <p>Choose <b>Free</b> if you don't want to block time of this event. You will be able to schedule another events at this time interval.</p>
+                            <p align="center">For Microsoft Outlook users only</p>
+                            <p>Choose <b>Tentative</b> if you are not sure whether the event will take place or weather you will be a part of it.</p>
+                            <p>Choose <b>Out Of Office</b> if you will not be in office at time of the event.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <select name="eventStatus" id="selectEventStatus" class="form-control">
+                <option selected>Free</option>
+                <option>Busy</option>
+                <option>Tentative</option>
+                <option>Out Of Office</option>
             </select>
         </div>
         <button id="submit" type="submit" class="btn btn-primary">Create ics file</button>
