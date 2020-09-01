@@ -3,12 +3,9 @@
     <title>Create new meeting</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-<%--    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/static/script.js"></script>--%>
-<%--    <script type="text/css" src="${pageContext.request.contextPath}/resources/static/main.css"></script>--%>
 </head>
 <body>
 <script>
-    var jsonStr;
     function createJSON() {
         var object = {};
         var formData = new FormData(document.forms.newMeetingForm); //ссылаемся на форму
@@ -16,7 +13,9 @@
         formData.forEach(function (value, key) {
             object[key] = value;
         });
-        jsonStr = JSON.stringify(object); //преобразуем в JSON-строку
+
+
+
         var json = JSON.stringify(object); //преобразуем в JSON-строку
         var request = new XMLHttpRequest();
         request.open("POST","./createMeeting",true);
@@ -127,6 +126,8 @@
             <select name="eventStatus" id="selectEventStatus" class="form-control">
                 <option selected>Free</option>
                 <option>Busy</option>
+                <option>Tentative</option>
+                <option>Out Of Office</option>
             </select>
         </div>
         <button id="submit" type="submit" class="btn btn-primary">Create ics file</button>

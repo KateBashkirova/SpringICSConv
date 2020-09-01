@@ -1,6 +1,6 @@
 package ics;
 
-import ics.icsClasses.DateAndTime;
+import ics.icsClasses.FormatHelper;
 import ics.icsClasses.Reminder;
 import ics.icsClasses.Timezone;
 import org.springframework.core.io.ByteArrayResource;
@@ -13,9 +13,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
+
+import static ics.icsClasses.FormatHelper.*;
+import static ics.icsClasses.FormatHelper.formatDate;
 
 @Controller
 public class FormProcessingController {
+
     //отображение страницы с формой
     @RequestMapping(value = "/createMeeting", method = RequestMethod.GET)
     public ModelAndView showMeetingForm()
@@ -29,56 +35,65 @@ public class FormProcessingController {
     //тут как бы meeting, но на деле meeting = пришедшей jsonStr, просто Meeting показывает, что jsonStr распарсить по Meeting.class
     public ResponseEntity createMeeting(@RequestBody Meeting meeting) {
         Timezone tz = new Timezone();
-        DateAndTime dateAndTime = new DateAndTime();
-        ArrayList <String> currDateAndTime = dateAndTime.currentDateAndTime();
+        FormatHelper dateAndTime = new FormatHelper();
         Reminder reminder = new Reminder();
 
         ArrayList<String> meetingInfo = new ArrayList<>();
-        meetingInfo.add("BEGIN:VCALENDAR\n" +
-                        "VERSION:2.0\n" +
-                        "PRODID:ktbrv\n" +
-                        "CALSCALE:GREGORIAN\n" +
-                        "BEGIN:VTIMEZONE\n" +
-                        "TZID=" + tz.tzid(meeting.getTimezone()) + "\n" +
-                        "TZURL:http://tzurl.org/zoneinfo-outlook/" + tz.tzid(meeting.getTimezone()) + "\n" +
-                        "X-LIC-LOCATION:" + tz.tzid(meeting.getTimezone()) + "\n" +
-                        "BEGIN:STANDARD\n" +
-                        "TZOFFSETFROM:" + tz.tzOffSet(meeting.getTimezone()) + "\n" +
-                        "TZOFFSETTO:" + tz.tzOffSet(meeting.getTimezone()) + "\n" +
-                        "TZNAME:" + tz.tzName(meeting.getTimezone()) + "\n" +
-                        "DTSTART:19700101T000000\n" +
-                        "END:STANDARD\n" +
-                        "END:VTIMEZONE\n" +
-                        "BEGIN:VEVENT\n" +
-                        "DTSTAMP:" + currDateAndTime.get(0) + "T" + currDateAndTime.get(1) + "Z" + "\n" +
-                        "DTSTART;TZID=" + tz.tzid(meeting.getTimezone()) + ":" + dateAndTime.Date(meeting.getStartDate())
-                                        + "T" + dateAndTime.Time(meeting.getStartTime()) + "\n" +
-                        "DTEND;TZID=" + tz.tzid(meeting.getTimezone()) + ":" + dateAndTime.Date(meeting.getEndDate())
-                                        + "T" + dateAndTime.Time(meeting.getEndTime()) + "\n" +
-                        "SUMMARY:" + meeting.getSummary() + "\n");
+        meetingInfo.add("BEGIN:VCALENDAR\r\n" +
+                "VERSION:2.0\r\n" +
+                "PRODID:ktbrv\r\n" +
+                "CALSCALE:GREGORIAN\r\n" +
+                "BEGIN:VTIMEZONE\r\n" +
+                "TZID=" + tz.tzid(meeting.getTimezone()) + "\r\n" +
+                "TZURL:http://tzurl.org/zoneinfo-outlook/" + tz.tzid(meeting.getTimezone()) + "\r\n" +
+                "X-LIC-LOCATION:" + tz.tzid(meeting.getTimezone()) + "\r\n" +
+                "BEGIN:STANDARD\r\n" +
+                "TZOFFSETFROM:" + tz.tzOffSet(meeting.getTimezone()) + "\r\n" +
+                "TZOFFSETTO:" + tz.tzOffSet(meeting.getTimezone()) + "\r\n" +
+                "TZNAME:" + tz.tzName(meeting.getTimezone()) + "\r\n" +
+                "DTSTART:19700101T000000\r\n" +
+                "END:STANDARD\r\n" +
+                "END:VTIMEZONE\r\n" +
+                "BEGIN:VEVENT\r\n" +
+                "DTSTAMP:" + formatDate(DATE_T_TIME_Z, new Date()) + "\r\n" +
+                "DTSTART;TZID=" + getStartDateString(meeting) + "\r\n" +
+                "DTEND;TZID=" + tz.tzid(meeting.getTimezone()) + ":" + dateAndTime.date(meeting.getEndDate())
+                + "T" + dateAndTime.time(meeting.getEndTime()) + "\r\n" +
+                "SUMMARY:" + meeting.getSummary() + "\r\n");
         if (!meeting.getDescription().trim().isEmpty()){
-            meetingInfo.add("DESCRIPTION:" + meeting.getDescription() + "\n");
+            meetingInfo.add("DESCRIPTION:" + meeting.getDescription() + "\r\n");
         }
-                        //"DESCRIPTION:" + meeting.getDescription() + "\n" +
-        meetingInfo.add("LOCATION:" + meeting.getLocation() + "\n");
+        meetingInfo.add("LOCATION:" + meeting.getLocation() + "\r\n");
+
         //проверка статуса мероприятия
-        if(meeting.getEventStatus().equalsIgnoreCase("Free")){
-            meetingInfo.add("TRANSP:TRANSPARENT\n");
+        switch (meeting.getEventStatus().toLowerCase()){
+            case "free":
+                meetingInfo.add("TRANSP:TRANSPARENT\r\n");
+                break;
+            case "busy":
+                meetingInfo.add("TRANSP:OPAQUE\r\n");
+                break;
+            case "tentative":
+                meetingInfo.add("TRANSP:TRANSPARENT\r\n");
+                meetingInfo.add("X-MICROSOFT-CDO-BUSYSTATUS:TENTATIVE\r\n");
+                break;
+            case "out of office":
+                meetingInfo.add("TRANSP:TRANSPARENT\r\n");
+                meetingInfo.add("X-MICROSOFT-CDO-BUSYSTATUS:OOF\r\n");
         }
-        else meetingInfo.add("TRANSP:OPAQUE\n");
+
         //если нужно напоминание о встрече
         if (!reminder.ReminderTime(meeting.getReminder()).equalsIgnoreCase("null"))
         {
-            meetingInfo.add("BEGIN:VALARM\n" + "ACTION:DISPLAY\n" + "DESCRIPTION:reminder\n");
-            /*if (!meeting.getDescription().trim().isEmpty()){
-                meetingInfo.add("DESCRIPTION:" + meeting.getDescription());
-            }*/
-            meetingInfo.add("TRIGGER:" + reminder.ReminderTime(meeting.getReminder()) + "\n" +
-                            "END:VALARM\n" + "END:VEVENT\n" + "END:VCALENDAR\n");
+            meetingInfo.add("BEGIN:VALARM\r\n" + "ACTION:DISPLAY\r\n");
+            if (!meeting.getDescription().trim().isEmpty()){
+                meetingInfo.add("DESCRIPTION:" + meeting.getDescription() + "\r\n");
+            }
+            else meetingInfo.add("DESCRIPTION:Reminder\r\n");
+            meetingInfo.add("TRIGGER:" + reminder.ReminderTime(meeting.getReminder()) + "\r\n" + "END:VALARM\r\n");
         }
-        else {
-            meetingInfo.add("END:VEVENT\n" + "END:VCALENDAR");
-        }
+        meetingInfo.add("END:VEVENT\r\n" + "END:VCALENDAR");
+
 
         //ArrayList -> String
         String joined = String.join("", meetingInfo);
@@ -90,5 +105,6 @@ public class FormProcessingController {
         headers.add("Content-Disposition", "attachment;filename=" + meeting.getSummary() + ".ics");
         return new ResponseEntity(bt, headers, HttpStatus.OK);
     }
+
 }
 

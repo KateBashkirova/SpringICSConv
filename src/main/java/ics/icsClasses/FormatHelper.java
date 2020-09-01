@@ -1,13 +1,27 @@
 package ics.icsClasses;
 
 import ics.Meeting;
-import java.io.IOException;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 
 //меняем формат времени и даты
-public class DateAndTime {
+public class FormatHelper {
+
+    public static final String DATE_T_TIME_Z = "yyyyMMdd'T'hhmmss'Z'";
+
+    public static String formatDate(String dateFormat, Date date) {
+        return new SimpleDateFormat(dateFormat).format(date);
+    }
+
+    public static String getStartDateString(@RequestBody Meeting meeting) {
+        Timezone tz = new Timezone();
+        return tz.tzid(meeting.getTimezone()) + ":" + date(meeting.getStartDate())
+                + "T" + time(meeting.getStartTime());
+    }
 
     public ArrayList<String> currentDateAndTime(){
         //дату и время будем хранить отдельно (только строки!)
@@ -23,15 +37,16 @@ public class DateAndTime {
         currDateAndTimeList.add(icsCurrDate);
         currDateAndTimeList.add(currTime);
 
+
         return currDateAndTimeList;
     }
 
-    public String Date(String date){
+    public static String date(String date){
         //приводим к виду YYYYMMDD без знаков
         return date.replaceAll("[\\-]", ""); //убираем точки;
     }
 
-    public String Time(String time){
+    public static String time(String time){
         //приводим к виду HHMM без знаков + добавляем SS
         return time.replaceAll(":", "") + "00";
     }
