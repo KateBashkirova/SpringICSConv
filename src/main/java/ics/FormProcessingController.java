@@ -1,8 +1,5 @@
 package ics;
 
-import ics.icsClasses.FormatHelper;
-import ics.icsClasses.Reminder;
-import ics.icsClasses.Timezone;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,7 +14,6 @@ import java.util.Date;
 
 import static ics.icsClasses.FormatHelper.*;
 import static ics.icsClasses.Reminder.*;
-//import static ics.icsClasses.FormatHelper.formatDate;
 
 @Controller
 public class FormProcessingController {
@@ -34,9 +30,7 @@ public class FormProcessingController {
     @RequestMapping(value="/createMeeting", method = RequestMethod.POST, consumes = "application/json")
     //тут как бы meeting, но на деле meeting = пришедшей jsonStr, просто Meeting показывает, что jsonStr распарсить по Meeting.class
     public ResponseEntity createMeeting(@RequestBody Meeting meeting) {
-        Reminder reminder = new Reminder();
         ArrayList<String> meetingInfo = new ArrayList<>();
-
         meetingInfo.add("BEGIN:VCALENDAR\r\n" +
                 "VERSION:2.0\r\n" +
                 "PRODID:ktbrv\r\n" +
@@ -78,28 +72,26 @@ public class FormProcessingController {
         }
 
         //если нужно напоминание о встрече
-        if (!reminder.ReminderTime(meeting.getReminder()).equalsIgnoreCase("null"))
+        if (!getReminderTime(meeting).equalsIgnoreCase("null"))
         {
             meetingInfo.add("BEGIN:VALARM\r\n" + "ACTION:DISPLAY\r\n");
             if (!meeting.getDescription().trim().isEmpty()){
                 meetingInfo.add("DESCRIPTION:" + meeting.getDescription() + "\r\n");
             }
             else meetingInfo.add("DESCRIPTION:Reminder\r\n");
-            meetingInfo.add("TRIGGER:" + reminder.ReminderTime(meeting.getReminder()) + "\r\n" + "END:VALARM\r\n");
+            meetingInfo.add("TRIGGER:" + getReminderTime(meeting) + "\r\n" + "END:VALARM\r\n");
         }
         meetingInfo.add("END:VEVENT\r\n" + "END:VCALENDAR");
 
-
         //ArrayList -> String
-        String joined = String.join("", meetingInfo);
+        String completeMeetingInfo = String.join("", meetingInfo);
 
         //формирование файла и отправка на скачивание
-        ByteArrayResource bt = new ByteArrayResource(joined.getBytes());
+        ByteArrayResource bt = new ByteArrayResource(completeMeetingInfo.getBytes());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf("application/ics"));
         headers.add("Content-Disposition", "attachment;filename=" + meeting.getSummary() + ".ics");
         return new ResponseEntity(bt, headers, HttpStatus.OK);
     }
-
 }
 
