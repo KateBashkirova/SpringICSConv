@@ -14,7 +14,15 @@
             object[key] = value;
         });
 
+        //определить ТЕКУЩЕЕ смещение часового пояса пользователя (тащит с браузера, могут быть неточности)
+        //из всех подходов наиболее "нестрашный" - спросить самого пользователя о его таймзоне
+        /*var date = new Date();
+        var tzOffSet = date.getTimezoneOffset();
+        object["timezone"] = tzOffSet;*/
 
+        //как вариант
+        //var date = -new Date().getTimezoneOffset()/60;
+        //TODO: дату создания файла можно тоже цеплять сразу отсюда
 
         var json = JSON.stringify(object); //преобразуем в JSON-строку
         var request = new XMLHttpRequest();
@@ -54,6 +62,7 @@
             <select name="timezone" id="selectTimezone" class="form-control">
                 <option selected>+06:00 Asia/Omsk</option>
                 <option>+00:00 UTC</option>
+                <option>-10:00 Pacific/Honolulu</option>
             </select>
             <br>
             <div class="form-row">
@@ -92,7 +101,6 @@
                 <option>1 hour before event</option>
                 <option>1 day before event</option>
                 <option>1 week before event</option>
-                <!--<option>Custom</option>-->
             </select>
             <br>
             <label for="selectEventStatus">Event Status</label>

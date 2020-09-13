@@ -14,10 +14,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.TimeZone;
 
 import static ics.icsClasses.FormatHelper.*;
-import static ics.icsClasses.FormatHelper.formatDate;
+import static ics.icsClasses.Reminder.*;
+//import static ics.icsClasses.FormatHelper.formatDate;
 
 @Controller
 public class FormProcessingController {
@@ -34,31 +34,26 @@ public class FormProcessingController {
     @RequestMapping(value="/createMeeting", method = RequestMethod.POST, consumes = "application/json")
     //тут как бы meeting, но на деле meeting = пришедшей jsonStr, просто Meeting показывает, что jsonStr распарсить по Meeting.class
     public ResponseEntity createMeeting(@RequestBody Meeting meeting) {
-        Timezone tz = new Timezone();
-        FormatHelper dateAndTime = new FormatHelper();
         Reminder reminder = new Reminder();
-
         ArrayList<String> meetingInfo = new ArrayList<>();
+
         meetingInfo.add("BEGIN:VCALENDAR\r\n" +
                 "VERSION:2.0\r\n" +
                 "PRODID:ktbrv\r\n" +
                 "CALSCALE:GREGORIAN\r\n" +
                 "BEGIN:VTIMEZONE\r\n" +
-                "TZID=" + tz.tzid(meeting.getTimezone()) + "\r\n" +
-                "TZURL:http://tzurl.org/zoneinfo-outlook/" + tz.tzid(meeting.getTimezone()) + "\r\n" +
-                "X-LIC-LOCATION:" + tz.tzid(meeting.getTimezone()) + "\r\n" +
+                "TZID=" + getTimezoneId(meeting) + "\r\n" +
+                "X-LIC-LOCATION:" + getTimezoneId(meeting) + "\r\n" +
                 "BEGIN:STANDARD\r\n" +
-                "TZOFFSETFROM:" + tz.tzOffSet(meeting.getTimezone()) + "\r\n" +
-                "TZOFFSETTO:" + tz.tzOffSet(meeting.getTimezone()) + "\r\n" +
-                "TZNAME:" + tz.tzName(meeting.getTimezone()) + "\r\n" +
+                "TZOFFSETFROM:" + getTimezoneOffSet(meeting) + "\r\n" +
+                "TZOFFSETTO:" + getTimezoneOffSet(meeting) + "\r\n" +
                 "DTSTART:19700101T000000\r\n" +
                 "END:STANDARD\r\n" +
                 "END:VTIMEZONE\r\n" +
                 "BEGIN:VEVENT\r\n" +
                 "DTSTAMP:" + formatDate(DATE_T_TIME_Z, new Date()) + "\r\n" +
                 "DTSTART;TZID=" + getStartDateString(meeting) + "\r\n" +
-                "DTEND;TZID=" + tz.tzid(meeting.getTimezone()) + ":" + dateAndTime.date(meeting.getEndDate())
-                + "T" + dateAndTime.time(meeting.getEndTime()) + "\r\n" +
+                "DTEND;TZID=" + getEndDateString(meeting) + "\r\n" +
                 "SUMMARY:" + meeting.getSummary() + "\r\n");
         if (!meeting.getDescription().trim().isEmpty()){
             meetingInfo.add("DESCRIPTION:" + meeting.getDescription() + "\r\n");
