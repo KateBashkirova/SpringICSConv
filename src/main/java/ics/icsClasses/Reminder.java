@@ -10,37 +10,23 @@ public class Reminder {
     }
 
     private static String reminderTime(String reminder) {
-        String reminderTime = "null";
+        String reminderTimeConfig;
 
         //нестандартные ситуации
-        if (reminder.equalsIgnoreCase("None")) reminderTime = "null";
-        else if (reminder.equalsIgnoreCase("At time of event")) reminderTime = "PT0M";
+        if (reminder.equalsIgnoreCase("None")) reminderTimeConfig = "null";
+        else if (reminder.equalsIgnoreCase("At time of event")) reminderTimeConfig = "PT0M";
 
-        //стандартные ситуации
+            //стандартные ситуации
         else {
             String[] splittedTime = reminder.split(" "); //{число}, {мера}
             String timeValue = splittedTime[0];
             String timeUnit = splittedTime[1];
             //убираем возможную "s" на конце слова
             if (timeUnit.contains("s")) timeUnit = timeUnit.substring(0, timeUnit.length() - 1);
-            switch (timeUnit) {
-                case ("minute"):
-                    reminderTime = "-PT" + timeValue + "M";
-                    break;
-                case ("hour"):
-                    reminderTime = "-PT" + timeValue + "H";
-                    break;
-                case ("day"):
-                    reminderTime = "-PT" + timeValue + "D";
-                    break;
-                case ("week"):
-                    reminderTime = "-PT" + timeValue + "W";
-                    break;
-                default:
-                    System.out.println("Error with time definition. Reminder will not be setted");
-                    break;
-            }
+
+            ReminderTime reminderTime = ReminderTime.valueOf(timeUnit.toUpperCase());
+            reminderTimeConfig = reminderTime.getReminderConfig(timeValue);
         }
-        return reminderTime;
+        return reminderTimeConfig;
     }
 }

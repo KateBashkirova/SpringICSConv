@@ -21,14 +21,13 @@ public class FormProcessingController {
 
     //отображение страницы с формой
     @RequestMapping(value = "/createMeeting", method = RequestMethod.GET)
-    public ModelAndView showMeetingForm()
-    {
+    public ModelAndView showMeetingForm() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("meeting");
         return modelAndView;
     }
 
-    @RequestMapping(value="/createMeeting", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "/createMeeting", method = RequestMethod.POST, consumes = "application/json")
     //тут как бы meeting, но на деле meeting = пришедшей jsonStr, просто Meeting показывает, что jsonStr распарсить по Meeting.class
     public ResponseEntity createMeeting(@RequestBody Meeting meeting) {
         ArrayList<String> meetingInfo = new ArrayList<>();
@@ -50,7 +49,7 @@ public class FormProcessingController {
                 "DTSTART;TZID=" + getStartDateString(meeting) + "\r\n" +
                 "DTEND;TZID=" + getEndDateString(meeting) + "\r\n" +
                 "SUMMARY:" + meeting.getSummary() + "\r\n");
-        if (!meeting.getDescription().trim().isEmpty()){
+        if (!meeting.getDescription().trim().isEmpty()) {
             meetingInfo.add("DESCRIPTION:" + meeting.getDescription() + "\r\n");
         }
         meetingInfo.add("LOCATION:" + meeting.getLocation() + "\r\n");
@@ -61,30 +60,12 @@ public class FormProcessingController {
         );
         meetingInfo.add(eventStatus.getConfig());
 
-        switch (meeting.getEventStatus().toLowerCase()){
-            case "free":
-                meetingInfo.add("TRANSP:TRANSPARENT\r\n");
-                break;
-            case "busy":
-                meetingInfo.add("TRANSP:OPAQUE\r\n");
-                break;
-            case "tentative":
-                meetingInfo.add("TRANSP:TRANSPARENT\r\n");
-                meetingInfo.add("X-MICROSOFT-CDO-BUSYSTATUS:TENTATIVE\r\n");
-                break;
-            case "out of office":
-                meetingInfo.add("TRANSP:TRANSPARENT\r\n");
-                meetingInfo.add("X-MICROSOFT-CDO-BUSYSTATUS:OOF\r\n");
-        }
-
         //если нужно напоминание о встрече
-        if (!getReminderTime(meeting).equalsIgnoreCase("null"))
-        {
+        if (!getReminderTime(meeting).equalsIgnoreCase("null")) {
             meetingInfo.add("BEGIN:VALARM\r\n" + "ACTION:DISPLAY\r\n");
-            if (!meeting.getDescription().trim().isEmpty()){
+            if (!meeting.getDescription().trim().isEmpty()) {
                 meetingInfo.add("DESCRIPTION:" + meeting.getDescription() + "\r\n");
-            }
-            else meetingInfo.add("DESCRIPTION:Reminder\r\n");
+            } else meetingInfo.add("DESCRIPTION:Reminder\r\n");
             meetingInfo.add("TRIGGER:" + getReminderTime(meeting) + "\r\n" + "END:VALARM\r\n");
         }
         meetingInfo.add("END:VEVENT\r\n" + "END:VCALENDAR");

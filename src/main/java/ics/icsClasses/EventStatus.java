@@ -10,19 +10,19 @@ public enum EventStatus {
     BUSY {
         @Override
         public String getConfig() {
-            return null;
+            return "TRANSP:OPAQUE\r\n";
         }
     },
     TENTATIVE {
         @Override
         public String getConfig() {
-            return null;
+            return "TRANSP:TRANSPARENT\r\nX-MICROSOFT-CDO-BUSYSTATUS:TENTATIVE\r\n";
         }
     },
     OUT_OF_OFFICE("out of office") {
         @Override
         public String getConfig() {
-            return null;
+            return "TRANSP:TRANSPARENT\r\nX-MICROSOFT-CDO-BUSYSTATUS:OOF\r\n";
         }
     };
 

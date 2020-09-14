@@ -35,18 +35,7 @@ public class FormatHelper {
 
     public static String getTimezoneOffSet(@RequestBody Meeting meeting) {
         double offsetInHours = ZonedDateTime.now(ZoneId.of(getTimezoneId(meeting))).getOffset().getTotalSeconds() / 3600.0;
-
         return String.format("%+05d", (int) offsetInHours * 100);
-        //чтобы не ругался google calendar
-//        StringBuffer sb = new StringBuffer();
-//        if(offsetInHours >= 0) sb.append("+");
-//        String offset;
-//        if (Math.abs(offsetInHours) < 10){
-//            sb.append("0").append(offsetInHours).append("00");
-//            offset = sb.toString();
-//        }
-//        else offset = String.valueOf(offsetInHours).concat("00");
-//        return offset;
     }
 
     private static String date(String date) {
