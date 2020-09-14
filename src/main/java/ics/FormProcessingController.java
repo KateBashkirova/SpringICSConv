@@ -1,5 +1,6 @@
 package ics;
 
+import ics.icsClasses.EventStatus;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -55,6 +56,11 @@ public class FormProcessingController {
         meetingInfo.add("LOCATION:" + meeting.getLocation() + "\r\n");
 
         //проверка статуса мероприятия
+        EventStatus eventStatus = EventStatus.valueOf(
+                meeting.getEventStatus().replace(" ", "_").toUpperCase()
+        );
+        meetingInfo.add(eventStatus.getConfig());
+
         switch (meeting.getEventStatus().toLowerCase()){
             case "free":
                 meetingInfo.add("TRANSP:TRANSPARENT\r\n");
