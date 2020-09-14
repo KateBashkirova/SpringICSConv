@@ -5,17 +5,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
+import javax.servlet.MultipartConfigElement;
+
 @EnableWebMvc //поддерживает веб-функции
 @Configuration
-@ComponentScan({"config", "jcs"})
+@ComponentScan({"config", "ics"})
 
 public class SpringConfig implements WebMvcConfigurer { //с этим интерфейсом реализуем метод cVR
     //внедряем appCont для tResolver
@@ -37,7 +36,8 @@ public class SpringConfig implements WebMvcConfigurer { //с этим интер
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("hello");
+        //registry.addViewController("/").setViewName("hello");
+        registry.addViewController("/").setViewName("meeting");
     }
 
     @Bean
@@ -55,4 +55,11 @@ public class SpringConfig implements WebMvcConfigurer { //с этим интер
         resolver.setTemplateEngine(templateEngine());
         registry.viewResolver(resolver);
     }
+
+    //css
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry){
+        registry.addResourceHandler("/resources/**").addResourceLocations("/resources/").setCachePeriod(31556926);
+    }
+
 }
