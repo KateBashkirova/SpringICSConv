@@ -49,31 +49,30 @@ public class FormProcessingController {
                 "DTSTART;TZID=" + getStartDateString(meeting) + "\r\n" +
                 "DTEND;TZID=" + getEndDateString(meeting) + "\r\n" +
                 "SUMMARY:" + meeting.getSummary() + "\r\n");
+        //если у мероприятия есть описание
         if (!meeting.getDescription().trim().isEmpty()) {
             meetingInfo.add("DESCRIPTION:" + meeting.getDescription() + "\r\n");
         }
         meetingInfo.add("LOCATION:" + meeting.getLocation() + "\r\n");
 
-        //проверка статуса мероприятия
+        //добавить статус мероприятия
         EventStatus eventStatus = EventStatus.valueOf(
                 meeting.getEventStatus().replace(" ", "_").toUpperCase()
         );
         meetingInfo.add(eventStatus.getConfig());
 
-        //если нужно напоминание о встрече
+        //добавить напоминание о встрече (если нужно)
         if (!getReminderTime(meeting).equalsIgnoreCase("null")) {
             meetingInfo.add("BEGIN:VALARM\r\n" + "ACTION:DISPLAY\r\n");
-            if (!meeting.getDescription().trim().isEmpty()) {
-                meetingInfo.add("DESCRIPTION:" + meeting.getDescription() + "\r\n");
-            } else meetingInfo.add("DESCRIPTION:Reminder\r\n");
-            meetingInfo.add("TRIGGER:" + getReminderTime(meeting) + "\r\n" + "END:VALARM\r\n");
+            meetingInfo.add("TRIGGER:" + getReminderTime(meeting));
+            meetingInfo.add("END:VALARM\r\n");
         }
         meetingInfo.add("END:VEVENT\r\n" + "END:VCALENDAR");
 
-        //ArrayList -> String
+        //преобразовать ArrayList в String
         String completeMeetingInfo = String.join("", meetingInfo);
 
-        //формирование файла и отправка на скачивание
+        //сформировать и вернуть файл
         ByteArrayResource bt = new ByteArrayResource(completeMeetingInfo.getBytes());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf("application/ics"));
@@ -81,4 +80,5 @@ public class FormProcessingController {
         return new ResponseEntity(bt, headers, HttpStatus.OK);
     }
 }
+
 

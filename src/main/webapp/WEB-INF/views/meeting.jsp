@@ -13,17 +13,6 @@
         formData.forEach(function (value, key) {
             object[key] = value;
         });
-
-        //определить ТЕКУЩЕЕ смещение часового пояса пользователя (тащит с браузера, могут быть неточности)
-        //из всех подходов наиболее "нестрашный" - спросить самого пользователя о его таймзоне
-        /*var date = new Date();
-        var tzOffSet = date.getTimezoneOffset();
-        object["timezone"] = tzOffSet;*/
-
-        //как вариант
-        //var date = -new Date().getTimezoneOffset()/60;
-        //TODO: дату создания файла можно тоже цеплять сразу отсюда
-
         var json = JSON.stringify(object); //преобразуем в JSON-строку
         var request = new XMLHttpRequest();
         request.open("POST","./createMeeting",true);

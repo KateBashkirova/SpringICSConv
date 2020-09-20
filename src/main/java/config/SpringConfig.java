@@ -10,8 +10,6 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
-import javax.servlet.MultipartConfigElement;
-
 @EnableWebMvc //поддерживает веб-функции
 @Configuration
 @ComponentScan({"config", "ics"})
@@ -36,7 +34,6 @@ public class SpringConfig implements WebMvcConfigurer { //с этим интер
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        //registry.addViewController("/").setViewName("hello");
         registry.addViewController("/").setViewName("meeting");
     }
 

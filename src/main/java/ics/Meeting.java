@@ -2,6 +2,9 @@ package ics;
 
 import java.io.Serializable;
 
+/**
+ * Class exists for storing information about the meeting
+ */
 public class Meeting implements Serializable {
     private String summary;
     private String location;
@@ -40,9 +43,7 @@ public class Meeting implements Serializable {
         this.description = description;
     }
 
-    public String getTimezone() {
-        return timezone;
-    }
+    public String getTimezone() { return timezone; }
 
     public void setTimezone(String timezone) {
         this.timezone = timezone;
@@ -88,7 +89,11 @@ public class Meeting implements Serializable {
         this.reminder = reminder;
     }
 
-    public String getEventStatus() { return eventStatus; }
+    public String getEventStatus() {
+        return eventStatus;
+    }
 
-    public void setEventStatus(String eventStatus) { this.eventStatus = eventStatus; }
+    public void setEventStatus(String eventStatus) {
+        this.eventStatus = eventStatus;
+    }
 }

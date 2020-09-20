@@ -1,5 +1,8 @@
 package ics.icsClasses;
 
+/**
+ * Class contains options for meeting busy status
+ */
 public enum EventStatus {
     FREE {
         @Override
@@ -19,22 +22,16 @@ public enum EventStatus {
             return "TRANSP:TRANSPARENT\r\nX-MICROSOFT-CDO-BUSYSTATUS:TENTATIVE\r\n";
         }
     },
-    OUT_OF_OFFICE("out of office") {
+    OUT_OF_OFFICE() {
         @Override
         public String getConfig() {
             return "TRANSP:TRANSPARENT\r\nX-MICROSOFT-CDO-BUSYSTATUS:OOF\r\n";
         }
     };
 
-    private final String statusName;
-
-    EventStatus(String statusName) {
-        this.statusName = statusName;
-    }
-
-    EventStatus() {
-        this.statusName = this.name().toLowerCase();
-    }
-
+    /**
+     * Method of generating meeting's busy status depending on user's choice
+     * @return String which value is meeting's busy status
+     */
     public abstract String getConfig();
 }
