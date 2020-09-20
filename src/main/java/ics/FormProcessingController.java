@@ -16,10 +16,16 @@ import java.util.Date;
 import static ics.icsClasses.FormatHelper.*;
 import static ics.icsClasses.Reminder.*;
 
+/**
+ * The main controller
+ */
 @Controller
 public class FormProcessingController {
 
-    //отображение страницы с формой
+    /**
+     * Method displays a page with a form
+     * @return page with a form
+     */
     @RequestMapping(value = "/createMeeting", method = RequestMethod.GET)
     public ModelAndView showMeetingForm() {
         ModelAndView modelAndView = new ModelAndView();
@@ -27,8 +33,12 @@ public class FormProcessingController {
         return modelAndView;
     }
 
+    /**
+     * Method processes information about event and generates ics file as a result
+     * @param meeting class with event parameters
+     * @return ics file
+     */
     @RequestMapping(value = "/createMeeting", method = RequestMethod.POST, consumes = "application/json")
-    //тут как бы meeting, но на деле meeting = пришедшей jsonStr, просто Meeting показывает, что jsonStr распарсить по Meeting.class
     public ResponseEntity createMeeting(@RequestBody Meeting meeting) {
         ArrayList<String> meetingInfo = new ArrayList<>();
         meetingInfo.add("BEGIN:VCALENDAR\r\n" +
