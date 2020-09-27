@@ -1,5 +1,7 @@
 package ics;
 
+import ics.icsClasses.Reminder;
+
 import java.io.Serializable;
 
 /**
@@ -14,7 +16,9 @@ public class Meeting implements Serializable {
     private String startTime;
     private String endDate;
     private String endTime;
-    private String reminder;
+    //todo change to object Reminder with 3 attributes (on/off, Reminder value, Reminder measurement Unit)
+//    private String reminderText;
+    private Reminder reminder;
     private String eventStatus;
 
     public Meeting() {}
@@ -81,11 +85,15 @@ public class Meeting implements Serializable {
         this.endTime = endTime;
     }
 
-    public String getReminder() {
-        return reminder;
+    public Reminder getReminder() {
+        if (reminder == null) {
+            return Reminder.NULL_REMINDER;
+        } else {
+            return reminder;
+        }
     }
 
-    public void setReminder(String reminder) {
+    public void setReminder(Reminder reminder) {
         this.reminder = reminder;
     }
 

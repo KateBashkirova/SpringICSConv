@@ -41,6 +41,7 @@ public class FormProcessingController {
     @RequestMapping(value = "/createMeeting", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity createMeeting(@RequestBody Meeting meeting) {
         ArrayList<String> meetingInfo = new ArrayList<>();
+        //todo extract to Builder
         meetingInfo.add("BEGIN:VCALENDAR\r\n" +
                 "VERSION:2.0\r\n" +
                 "PRODID:ktbrv\r\n" +
@@ -72,9 +73,9 @@ public class FormProcessingController {
         meetingInfo.add(eventStatus.getConfig());
 
         //добавить напоминание о встрече (если нужно)
-        if (!getReminderTime(meeting).equalsIgnoreCase("null")) {
+        if (meeting.getReminder().isOn()) {
             meetingInfo.add("BEGIN:VALARM\r\n" + "ACTION:DISPLAY\r\n");
-            meetingInfo.add("TRIGGER:" + getReminderTime(meeting));
+            meetingInfo.add("TRIGGER:" + meeting.getReminder().getReminderText());
             meetingInfo.add("END:VALARM\r\n");
         }
         meetingInfo.add("END:VEVENT\r\n" + "END:VCALENDAR");
