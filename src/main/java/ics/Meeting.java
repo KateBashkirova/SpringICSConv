@@ -1,5 +1,6 @@
 package ics;
 
+import ics.icsClasses.EventStatus;
 import ics.icsClasses.Reminder;
 
 import java.io.Serializable;
@@ -16,10 +17,8 @@ public class Meeting implements Serializable {
     private String startTime;
     private String endDate;
     private String endTime;
-    //todo change to object Reminder with 3 attributes (on/off, Reminder value, Reminder measurement Unit)
-//    private String reminderText;
     private Reminder reminder;
-    private String eventStatus;
+    private EventStatus eventStatus;
 
     public Meeting() {}
 
@@ -97,11 +96,12 @@ public class Meeting implements Serializable {
         this.reminder = reminder;
     }
 
-    public String getEventStatus() {
+    public EventStatus getEventStatus() {
         return eventStatus;
     }
 
     public void setEventStatus(String eventStatus) {
-        this.eventStatus = eventStatus;
+        this.eventStatus = EventStatus.valueOf(
+                eventStatus.replace(" ", "_").toUpperCase());
     }
 }

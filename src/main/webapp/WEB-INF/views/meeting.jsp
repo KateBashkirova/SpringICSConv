@@ -12,7 +12,7 @@
         var formData = new FormData(document.forms.newMeetingForm); //ссылаемся на форму
         //формируем объект из формы
         formData.forEach(function (value, key) {
-            if (!key.includes("eminder")) {
+            if (!key.includes("reminder")) {
                 object[key] = value;
             }
         });
@@ -67,14 +67,12 @@
                 <div class="form-group col-md-6">
                     <label for="startDate">Start date</label>
                     <small id="startDateHelp" class="form-text text-muted">Enter data as DD.MM.YYYY</small>
-                    <input name="startDate" type="date" class="form-control" id="startDate" value="2020-08-27"
-                           pattern="(0[1-9]|1[0-9]|2[0-9]|3[01]).(0[1-9]|1[012]).[0-9]{4}" required>
+                    <input name="startDate" type="date" class="form-control" id="startDate" value="2020-08-27" required>
                 </div>
                 <div class="form-group col-md-6">
                     <label for="startTime">Start time</label>
                     <small id="startTimeHelp" class="form-text text-muted">Enter data as HH:MM</small>
-                    <input name="startTime" type="time" class="form-control" id="startTime" value="22:00"
-                           pattern="(0[0-9]|1[0-9]|2[0-3])(:[0-5][0-9]){2}" required>
+                    <input name="startTime" type="time" class="form-control" id="startTime" value="22:00" required>
                 </div>
             </div>
             <br>
@@ -82,21 +80,21 @@
                 <div class="form-group col-md-6">
                     <label for="endDate">End date</label>
                     <small id="endDateHelp" class="form-text text-muted">Enter data as DD.MM.YYYY</small>
-                    <input name="endDate" type="date" class="form-control" id="endDate" value="2020-08-28"
-                           pattern="(0[1-9]|1[0-9]|2[0-9]|3[01]).(0[1-9]|1[012]).[0-9]{4}" required>
+                    <input name="endDate" type="date" class="form-control" id="endDate" value="2020-08-28" required>
                 </div>
                 <div class="form-group col-md-6">
                     <label for="endTime">End time</label>
                     <small id="endTimeHelp" class="form-text text-muted">Enter data as HH:MM</small>
-                    <input name="endTime" type="time" class="form-control" id="endTime" value="23:00"
-                           pattern="(0[0-9]|1[0-9]|2[0-3])(:[0-5][0-9]){2}" required>
+                    <input name="endTime" type="time" class="form-control" id="endTime" value="23:00" required>
                 </div>
             </div>
             <br>
-            <input type="checkbox" text="Set Reminder?" value="Yes" name="isReminderOn">
+            <label for="setReminder">Set reminder?</label>
+            <input id="setReminder" type="checkbox" value="Yes" name="isReminderOn">
+            <br>
             <input type="text" name="reminderValue" value="10">
-
-            <label for="selectReminder">Reminder</label>
+            <br>
+            <br>
             <select name="reminderMeasurementUnit" id="selectReminder" class="form-control">
                 <option value="M">minutes</option>
                 <option value="H">hours</option>

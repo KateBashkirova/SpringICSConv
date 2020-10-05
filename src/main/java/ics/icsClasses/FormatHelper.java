@@ -44,7 +44,8 @@ public class FormatHelper {
      * @param meeting class with event parameters
      * @return String which value is user's time zone ID
      */
-    public static String getTimezoneId(@RequestBody Meeting meeting) {
+    //todo: getTimezone в геттер, чтобы при запросе возвращать сразу готовы данные, а не оборачивать методом постоянно
+    public static String getTimezoneId(Meeting meeting) {
         return timezoneId(meeting.getTimezone());
     }
 

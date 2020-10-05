@@ -34,19 +34,31 @@ public class FormProcessingController {
      * @return ics file
      */
     @RequestMapping(value = "/createMeeting", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity createMeeting(@RequestBody Meeting meeting) {
+    public ResponseEntity<ByteArrayResource> createMeeting(@RequestBody Meeting meeting) {
         //todo extract to Builder
         //сформировать и вернуть файл
-        Builder builder = new Builder();
-        String fileConfig = builder.buildFileConfig(getTimezoneId(meeting), getTimezoneOffSet(meeting),
-                getStartDateString(meeting), getEndDateString(meeting), meeting.getSummary(), meeting.getDescription(),
-                meeting.getLocation(), meeting.getEventStatus(), meeting.getReminder());
+//        MeetingBuilder builder = new MeetingBuilder();
+//        String fileConfig = builder.buildFileConfig(getTimezoneId(meeting), getTimezoneOffSet(meeting),
+//                getStartDateString(meeting), getEndDateString(meeting), meeting.getSummary(), meeting.getDescription(),
+//                meeting.getLocation(), meeting.getEventStatus(), meeting.getReminder());
+
+        MeetingBuilder builder = new MeetingBuilder();
+        String fileConfig = builder
+                .timezone(getTimezoneId(meeting), getTimezoneOffSet(meeting))
+                .range(getStartDateString(meeting), getEndDateString(meeting))
+                .eventStatus(meeting.getEventStatus())
+                .build();
 
         ByteArrayResource bt = new ByteArrayResource(fileConfig.getBytes());
+        HttpHeaders headers = getHttpHeaders(meeting.getSummary());
+        return new ResponseEntity<>(bt, headers, HttpStatus.OK);
+    }
+
+    private HttpHeaders getHttpHeaders(String filename) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf("application/ics"));
-        headers.add("Content-Disposition", "attachment;filename=" + meeting.getSummary() + ".ics");
-        return new ResponseEntity(bt, headers, HttpStatus.OK);
+        headers.add("Content-Disposition", "attachment;filename=" + filename + ".ics");
+        return headers;
     }
 }
 
