@@ -1,4 +1,4 @@
-package ics.icsClasses;
+package ics.fileBuilders;
 
 /**
  * Class contains options for meeting busy status

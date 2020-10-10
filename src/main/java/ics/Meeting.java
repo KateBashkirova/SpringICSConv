@@ -1,13 +1,13 @@
 package ics;
 
-import ics.icsClasses.EventStatus;
-import ics.icsClasses.Reminder;
+import ics.fileBuilders.EventStatus;
+import ics.fileBuilders.Reminder;
 
 import java.io.Serializable;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import static ics.icsClasses.FormatHelper.formatDateWithTime;
+import static ics.fileBuilders.FormatHelper.formatDateWithTime;
 
 /**
  * Class exists for storing information about the meeting

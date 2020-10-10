@@ -1,7 +1,6 @@
-package ics.icsClasses;
+package ics.fileBuilders;
 
 import ics.Meeting;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;

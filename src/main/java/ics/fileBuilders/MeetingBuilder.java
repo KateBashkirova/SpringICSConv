@@ -1,11 +1,8 @@
-package ics;
-
-import ics.icsClasses.EventStatus;
-import ics.icsClasses.Reminder;
+package ics.fileBuilders;
 
 import java.util.Date;
 
-import static ics.icsClasses.FormatHelper.*;
+import static ics.fileBuilders.FormatHelper.*;
 
 public class MeetingBuilder {
 
@@ -19,7 +16,7 @@ public class MeetingBuilder {
     private EventStatus eventStatus;
     private Reminder reminder;
 
-    private StringBuilder stringBuilder = new StringBuilder();
+    private final StringBuilder stringBuilder = new StringBuilder();
     final String delimiter = "\r\n";
 
     public String build() {

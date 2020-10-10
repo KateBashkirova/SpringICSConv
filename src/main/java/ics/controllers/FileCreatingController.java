@@ -1,5 +1,7 @@
-package ics;
+package ics.controllers;
 
+import ics.Meeting;
+import ics.fileBuilders.MeetingBuilder;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -9,11 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-/**
- * The main controller
- */
+
 @Controller
-public class FormProcessingController {
+public class FileCreatingController {
 
     /**
      * Method displays a page with a form
