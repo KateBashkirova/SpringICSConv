@@ -9,8 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import static ics.icsClasses.FormatHelper.*;
-
 /**
  * The main controller
  */
@@ -35,18 +33,15 @@ public class FormProcessingController {
      */
     @RequestMapping(value = "/createMeeting", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<ByteArrayResource> createMeeting(@RequestBody Meeting meeting) {
-        //todo extract to Builder
         //сформировать и вернуть файл
-//        MeetingBuilder builder = new MeetingBuilder();
-//        String fileConfig = builder.buildFileConfig(getTimezoneId(meeting), getTimezoneOffSet(meeting),
-//                getStartDateString(meeting), getEndDateString(meeting), meeting.getSummary(), meeting.getDescription(),
-//                meeting.getLocation(), meeting.getEventStatus(), meeting.getReminder());
-
         MeetingBuilder builder = new MeetingBuilder();
         String fileConfig = builder
-                .timezone(getTimezoneId(meeting), getTimezoneOffSet(meeting))
-                .range(getStartDateString(meeting), getEndDateString(meeting))
+//                .timezone(meeting.getTimezoneID(), getTimezoneOffSet(meeting))
+                .timezone(meeting.getTimezoneID(), meeting.getTimezoneOffset())
+                .range(meeting.getEventStartParams(), meeting.getEventEndParams())
+                .eventInfo(meeting.getSummary(), meeting.getDescription(), meeting.getLocation())
                 .eventStatus(meeting.getEventStatus())
+                .reminder(meeting.getReminder())
                 .build();
 
         ByteArrayResource bt = new ByteArrayResource(fileConfig.getBytes());

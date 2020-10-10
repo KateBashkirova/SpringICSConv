@@ -9,11 +9,10 @@ import static ics.icsClasses.FormatHelper.*;
 
 public class MeetingBuilder {
 
-
     private String timezoneID;
     private String timezoneOffset;
-    private String eventStartDate;
-    private String eventEndDate;
+    private String eventStartParams;
+    private String eventEndParams;
     private String summary;
     private String description;
     private String location;
@@ -21,30 +20,29 @@ public class MeetingBuilder {
     private Reminder reminder;
 
     private StringBuilder stringBuilder = new StringBuilder();
+    final String delimiter = "\r\n";
 
     public String build() {
         validate();
         getFileInfo();
         getTimezoneConfig();
-        getEventDatesConfig(eventStartDate, eventEndDate);
-        getEventInfoConfig(summary, description, location);
+        getRangeConfig();
+        getEventInfoConfig();
         getEventStatusConfig();
-        getReminderConfig(reminder);
+        getReminderConfig();
         return stringBuilder.toString();
     }
 
     private void validate() {
         if (timezoneID == null ||
                 timezoneOffset == null ||
-                eventStartDate == null ||
-                eventEndDate == null ||
+                eventStartParams == null ||
+                eventEndParams == null ||
                 summary == null ||
-                description == null ||
                 location == null ||
                 eventStatus == null) {
             throw new IllegalArgumentException();
         }
-
     }
 
     public MeetingBuilder timezone(String timezoneID, String timezoneOffset) {
@@ -53,59 +51,77 @@ public class MeetingBuilder {
         return this;
     }
 
-    public MeetingBuilder range(String eventStartDate, String eventEndDate) {
-        this.eventStartDate = eventStartDate;
-        this.eventEndDate = eventEndDate;
+    public MeetingBuilder range(String eventStartParams, String eventEndParams) {
+        this.eventStartParams = eventStartParams;
+        this.eventEndParams = eventEndParams;
         return this;
     }
+
     public MeetingBuilder eventStatus(EventStatus eventStatus) {
         this.eventStatus = eventStatus;
         return this;
     }
 
+    public MeetingBuilder eventInfo(String summary, String description, String location) {
+        this.summary = summary;
+        this.description = description;
+        this.location = location;
+        return this;
+    }
+
+    public MeetingBuilder reminder(Reminder reminder) {
+        this.reminder = reminder;
+        return this;
+    }
+
     private void getFileInfo() {
-        stringBuilder.append("BEGIN:VCALENDAR\r\n").append("VERSION:2.0\r\n").append("PRODID:companyName\r\n")
-                .append("CALSCALE:GREGORIAN\r\n");
+        stringBuilder.append("BEGIN:VCALENDAR").append(delimiter)
+                .append("VERSION:2.0").append(delimiter)
+                .append("PRODID:companyName").append(delimiter)
+                .append("CALSCALE:GREGORIAN").append(delimiter);
     }
 
     private void getTimezoneConfig() {
-        stringBuilder.append("BEGIN:VTIMEZONE\r\n")
-                .append("TZID=").append(timezoneID).append("\r\n")
-                .append("X-LIC-LOCATION:").append(timezoneID).append("\r\n")
-                .append("BEGIN:STANDARD\r\n")
-                .append("TZOFFSETFROM:").append(timezoneOffset).append("\r\n")
-                .append("TZOFFSETTO:").append(timezoneOffset).append("\r\n")
-                .append("DTSTART:19700101T000000\r\n")
-                .append("END:STANDARD\r\n")
-                .append("END:VTIMEZONE\r\n");
+        stringBuilder.append("BEGIN:VTIMEZONE").append(delimiter)
+                .append("TZID=").append(timezoneID).append(delimiter)
+                .append("X-LIC-LOCATION:").append(timezoneID).append(delimiter)
+                .append("BEGIN:STANDARD").append("\r\n")
+                .append("TZOFFSETFROM:").append(timezoneOffset).append(delimiter)
+                .append("TZOFFSETTO:").append(timezoneOffset).append(delimiter)
+                .append("DTSTART:19700101T000000").append(delimiter)
+                .append("END:STANDARD").append(delimiter)
+                .append("END:VTIMEZONE").append(delimiter);
     }
 
-    private void getEventDatesConfig(String eventStartDate, String eventEndDate) {
-        stringBuilder.append("BEGIN:VEVENT\r\n" + "DTSTAMP:").append(formatDate(DATE_T_TIME_Z, new Date()))
-                .append("\r\n").append("DTSTART;TZID=").append(eventStartDate).append("\r\n").append("DTEND;TZID=")
-                .append(eventEndDate).append("\r\n");
+    private void getRangeConfig() {
+        stringBuilder.append("BEGIN:VEVENT").append(delimiter)
+                .append("DTSTAMP:").append(formatDate(DATE_T_TIME_Z, new Date())).append(delimiter)
+                .append("DTSTART;TZID=").append(eventStartParams).append(delimiter)
+                .append("DTEND;TZID=").append(eventEndParams).append(delimiter);
     }
 
-    private void getEventInfoConfig(String summary, String description, String location) {
-        stringBuilder.append("SUMMARY:").append(summary).append("\r\n");
+    private void getEventInfoConfig() {
+        stringBuilder.append("SUMMARY:").append(summary).append(delimiter);
         //если у мероприятия есть описание
         if (!description.trim().isEmpty()) {
-            stringBuilder.append("DESCRIPTION:").append(description).append("\r\n");
+            stringBuilder.append("DESCRIPTION:").append(description).append(delimiter);
         }
-        stringBuilder.append("LOCATION:").append(location).append("\r\n");
+        stringBuilder.append("LOCATION:").append(location).append(delimiter);
     }
 
     private void getEventStatusConfig() {
-        //добавить статус мероприятия
         stringBuilder.append(eventStatus.getConfig());
     }
 
-    private void getReminderConfig(Reminder reminder) {
+    private void getReminderConfig() {
         //добавить напоминание о встрече (если нужно)
         if (reminder.isOn()) {
-            stringBuilder.append("BEGIN:VALARM\r\n" + "ACTION:DISPLAY\r\n" + "TRIGGER:")
-                    .append(reminder.getReminderText()).append("END:VALARM\r\n");
+            stringBuilder.append("BEGIN:VALARM").append(delimiter)
+                    .append("ACTION:DISPLAY").append(delimiter)
+                    .append("TRIGGER:").append(reminder.getReminderText())
+                    .append("END:VALARM").append(delimiter);
         }
-        stringBuilder.append("END:VEVENT\r\n" + "END:VCALENDAR");
+        stringBuilder.append("END:VEVENT").append(delimiter)
+                    .append("END:VCALENDAR");
     }
 }
