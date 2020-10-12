@@ -56,7 +56,7 @@ public class SpringConfig implements WebMvcConfigurer { //с этим интер
     //css
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry){
-        registry.addResourceHandler("/resources/**").addResourceLocations("/resources/").setCachePeriod(31556926);
+        registry.addResourceHandler("/ext_web_resources/**").addResourceLocations("/ext_web_resources/").setCachePeriod(31556926);
     }
 
 }

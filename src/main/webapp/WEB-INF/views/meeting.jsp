@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<%--    <script type="text/javascript" src="/formProcessingScript.js"></script>--%>
 </head>
 <body>
 <script>
@@ -34,8 +35,8 @@
             var blob = request.response; //получаем ответ сервера
             var link = document.createElement('a'); //создаём элемент
             link.href = window.URL.createObjectURL(blob); //привязываем на него URL ответа - сгенерированного сервером файла
-            let fileName = document.forms.newMeetingForm.elements.summary.value + ".ics"; //назвать файл по summary из формы
-            link.download = fileName;
+            //назвать файл по summary из формы
+            link.download = document.forms.newMeetingForm.elements.summary.value + ".ics";
             link.click(); //триггернуть нажатие
         }
         request.send(json);

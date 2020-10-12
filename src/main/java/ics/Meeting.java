@@ -9,9 +9,6 @@ import java.time.ZonedDateTime;
 
 import static ics.fileBuilders.FormatHelper.formatDateWithTime;
 
-/**
- * Class exists for storing information about the meeting
- */
 public class Meeting implements Serializable {
     private String summary;
     private String location;
@@ -52,19 +49,15 @@ public class Meeting implements Serializable {
     }
 
     public String getTimezone() {
-        return timezone;
+        return timezone.replaceAll("[\\s0-9:+-]", "");
     }
 
     public void setTimezone(String timezone) {
         this.timezone = timezone;
     }
 
-    public String getTimezoneID() {
-        return timezone.replaceAll("[\\s0-9:+-]", "");
-    }
-
     public String getTimezoneOffset() {
-        double offsetInHours = ZonedDateTime.now(ZoneId.of(getTimezoneID())).getOffset().getTotalSeconds() / 3600.0;
+        double offsetInHours = ZonedDateTime.now(ZoneId.of(getTimezone())).getOffset().getTotalSeconds() / 3600.0;
         return String.format("%+05d", (int) offsetInHours * 100);
     }
 
@@ -101,11 +94,11 @@ public class Meeting implements Serializable {
     }
 
     public String getEventStartParams() {
-        return formatDateWithTime(startDate, startTime, getTimezoneID());
+        return formatDateWithTime(startDate, startTime, getTimezone());
     }
 
     public String getEventEndParams() {
-        return formatDateWithTime(endDate, endTime, getTimezoneID());
+        return formatDateWithTime(endDate, endTime, getTimezone());
     }
 
     public Reminder getReminder() {
@@ -125,14 +118,6 @@ public class Meeting implements Serializable {
     }
 
     public void setEventStatus(String eventStatus) {
-        this.eventStatus = EventStatus.valueOf(
-                eventStatus.replace(" ", "_").toUpperCase());
+        this.eventStatus = EventStatus.valueOf(eventStatus.replace(" ", "_").toUpperCase());
     }
-
-//    private String dateReplacement(String date, String time) {
-//        String formattedDate = date.replaceAll("[\\-.]", "");
-//        String formattedTime = time.replaceAll("[\\-:.]", "") + "00";
-//        return getTimezoneID() + ":" + formattedDate + "T" + formattedTime;
-//
-//    }
 }

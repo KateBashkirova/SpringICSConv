@@ -82,7 +82,7 @@ public class MeetingBuilder {
         stringBuilder.append("BEGIN:VTIMEZONE").append(delimiter)
                 .append("TZID=").append(timezoneID).append(delimiter)
                 .append("X-LIC-LOCATION:").append(timezoneID).append(delimiter)
-                .append("BEGIN:STANDARD").append("\r\n")
+                .append("BEGIN:STANDARD").append(delimiter)
                 .append("TZOFFSETFROM:").append(timezoneOffset).append(delimiter)
                 .append("TZOFFSETTO:").append(timezoneOffset).append(delimiter)
                 .append("DTSTART:19700101T000000").append(delimiter)
@@ -99,7 +99,7 @@ public class MeetingBuilder {
 
     private void getEventInfoConfig() {
         stringBuilder.append("SUMMARY:").append(summary).append(delimiter);
-        //если у мероприятия есть описание
+        //if event has description
         if (!description.trim().isEmpty()) {
             stringBuilder.append("DESCRIPTION:").append(description).append(delimiter);
         }
@@ -111,7 +111,7 @@ public class MeetingBuilder {
     }
 
     private void getReminderConfig() {
-        //добавить напоминание о встрече (если нужно)
+        //if reminder needs to be added
         if (reminder.isOn()) {
             stringBuilder.append("BEGIN:VALARM").append(delimiter)
                     .append("ACTION:DISPLAY").append(delimiter)
