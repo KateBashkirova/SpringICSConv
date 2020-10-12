@@ -16,30 +16,27 @@
                 object[key] = value;
             }
         });
+        //если нажат чекбокс с напоминанием
         if ("Yes" === formData.get("isReminderOn")) {
             object["reminder"] = {
                 "value": formData.get("reminderValue"),
                 "measurementUnit": formData.get("reminderMeasurementUnit")
             };
         }
-        var json = JSON.stringify(object); //преобразуем в JSON-строку
+        var json = JSON.stringify(object);
         var request = new XMLHttpRequest();
         request.open("POST", "./createMeeting", true);
-        request.responseType = "blob"; //blob - незименяемые, необработанные данные
+        request.responseType = "blob";
         request.setRequestHeader("Content-Type", "application/json");
-        //определение функции-обработчика ответа (не вызов!). Своеобразный handle, оболочка для помещения ответа.
-        //эта функция будет вызвана после send() (или во время), но определена должна быть ДО, чтобы быть тут, когда
-        //она понадобится xhr
+        //обработчик ответа
         request.onload = function () {
             var blob = request.response; //получаем ответ сервера
-            var link = document.createElement('a'); //создаём элемент
-            link.href = window.URL.createObjectURL(blob); //привязываем на него URL ответа - сгенерированного сервером файла
-            let fileName = document.forms.newMeetingForm.elements.summary.value + ".ics"; //назвать файл по summary из формы
-            link.download = fileName;
-            link.click(); //триггернуть нажатие
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = document.forms.newMeetingForm.elements.summary.value + ".ics"; //назвать файл по summary из формы
+            link.click();
         }
         request.send(json);
-        alert("JSON created / createJSON works");
         return false;
     }
 </script>
