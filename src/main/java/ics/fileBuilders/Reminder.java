@@ -1,7 +1,4 @@
-package ics.icsClasses;
-
-import ics.Meeting;
-import org.springframework.web.bind.annotation.RequestBody;
+package ics.fileBuilders;
 
 /**
  * Class contains methods for forming event's reminder time

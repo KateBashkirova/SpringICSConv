@@ -1,8 +1,13 @@
 package ics;
 
-import ics.icsClasses.Reminder;
+import ics.fileBuilders.EventStatus;
+import ics.fileBuilders.Reminder;
 
 import java.io.Serializable;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
+import static ics.fileBuilders.FormatHelper.formatDateWithTime;
 
 /**
  * Class exists for storing information about the meeting
@@ -16,12 +21,11 @@ public class Meeting implements Serializable {
     private String startTime;
     private String endDate;
     private String endTime;
-    //todo change to object Reminder with 3 attributes (on/off, Reminder value, Reminder measurement Unit)
-//    private String reminderText;
     private Reminder reminder;
-    private String eventStatus;
+    private EventStatus eventStatus;
 
-    public Meeting() {}
+    public Meeting() {
+    }
 
     public String getSummary() {
         return summary;
@@ -47,13 +51,24 @@ public class Meeting implements Serializable {
         this.description = description;
     }
 
-    public String getTimezone() { return timezone; }
+    public String getTimezone() {
+        return timezone;
+    }
 
     public void setTimezone(String timezone) {
         this.timezone = timezone;
     }
 
-    public String getStartDate() {
+    public String getTimezoneID() {
+        return timezone.replaceAll("[\\s0-9:+-]", "");
+    }
+
+    public String getTimezoneOffset() {
+        double offsetInHours = ZonedDateTime.now(ZoneId.of(getTimezoneID())).getOffset().getTotalSeconds() / 3600.0;
+        return String.format("%+05d", (int) offsetInHours * 100);
+    }
+
+    private String getStartDate() {
         return startDate;
     }
 
@@ -61,7 +76,7 @@ public class Meeting implements Serializable {
         this.startDate = startDate;
     }
 
-    public String getStartTime() {
+    private String getStartTime() {
         return startTime;
     }
 
@@ -69,7 +84,7 @@ public class Meeting implements Serializable {
         this.startTime = startTime;
     }
 
-    public String getEndDate() {
+    private String getEndDate() {
         return endDate;
     }
 
@@ -77,12 +92,20 @@ public class Meeting implements Serializable {
         this.endDate = endDate;
     }
 
-    public String getEndTime() {
+    private String getEndTime() {
         return endTime;
     }
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    public String getEventStartParams() {
+        return formatDateWithTime(startDate, startTime, getTimezoneID());
+    }
+
+    public String getEventEndParams() {
+        return formatDateWithTime(endDate, endTime, getTimezoneID());
     }
 
     public Reminder getReminder() {
@@ -97,11 +120,19 @@ public class Meeting implements Serializable {
         this.reminder = reminder;
     }
 
-    public String getEventStatus() {
+    public EventStatus getEventStatus() {
         return eventStatus;
     }
 
     public void setEventStatus(String eventStatus) {
-        this.eventStatus = eventStatus;
+        this.eventStatus = EventStatus.valueOf(
+                eventStatus.replace(" ", "_").toUpperCase());
     }
+
+//    private String dateReplacement(String date, String time) {
+//        String formattedDate = date.replaceAll("[\\-.]", "");
+//        String formattedTime = time.replaceAll("[\\-:.]", "") + "00";
+//        return getTimezoneID() + ":" + formattedDate + "T" + formattedTime;
+//
+//    }
 }

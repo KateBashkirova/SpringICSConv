@@ -1,4 +1,4 @@
-package ics.icsClasses;
+package ics.fileBuilders;
 
 /**
  * Class contains options for meeting busy status
@@ -19,13 +19,15 @@ public enum EventStatus {
     TENTATIVE {
         @Override
         public String getConfig() {
-            return "TRANSP:TRANSPARENT\r\nX-MICROSOFT-CDO-BUSYSTATUS:TENTATIVE\r\n";
+            return "TRANSP:TRANSPARENT\r\n" +
+                    "X-MICROSOFT-CDO-BUSYSTATUS:TENTATIVE\r\n";
         }
     },
     OUT_OF_OFFICE() {
         @Override
         public String getConfig() {
-            return "TRANSP:TRANSPARENT\r\nX-MICROSOFT-CDO-BUSYSTATUS:OOF\r\n";
+            return "TRANSP:TRANSPARENT\r\n" +
+                    "X-MICROSOFT-CDO-BUSYSTATUS:OOF\r\n";
         }
     };
 
